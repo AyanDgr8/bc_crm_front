@@ -1,0 +1,334 @@
+/* src/components/routes/Forms/AdminPortal/AdminPortal.css */
+
+.admin-portal-container {
+    display: flex;
+    flex-direction: column;
+    background-color: #364C63;
+}
+
+.admin-portal {
+    padding: 0.5rem;
+    margin: auto;
+    flex: 1;
+    width: 100%;
+}
+
+.sectionnn {
+    background: white;
+    border-radius: 8px;
+    padding: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    display: flex;
+    margin: auto;
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+    flex-direction: column;
+}
+
+.admin-portal-heading {
+    color: #EF6F53  ;
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: bold;
+    letter-spacing: 0.05rem;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.error-messaage {
+    background-color: #f8d7da;
+    color: #c62828;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.success-message {
+    background-color: #d4edda;
+    color: #2e7d32;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.create-team-heading,
+.create-user-heading,
+.existing-user-heading {
+    color: #EF6F53  ;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 0.05rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+.existing-user-heading {
+    margin-top: 1rem;
+}
+
+.create-team-heading{
+    margin-bottom: 0;
+}
+
+.team-inputsss{
+    display: flex;
+    flex-direction: row;
+    margin-top: 0.25rem;
+
+}
+.team-inputt {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.team-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.team-name-input {
+    max-width: 40%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.tax-id-input,
+.reg-no-input {
+    max-width: 30%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.team-address-input {
+    max-width: 80%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.team-country-input {
+    max-width: 20%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.team-detail-input {
+    max-width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: none;
+    height: 40px;
+}
+
+.team-inputt input,
+.team-inputt textarea {
+    flex: 1;
+    padding: 2px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.create-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 2px 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin: auto;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.create-button:hover {
+    background-color: #007bff;
+    transform: translateY(2px); 
+}
+
+.user-formm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.user-inputs {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.user-inputs input,
+.user-inputs select {
+    padding: 2px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex: 1;
+    min-width: 180px;
+    max-width: 250px;
+}
+
+.users-list {
+    width: 70%;
+    margin: auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 1rem;
+}
+
+.team-section {
+    width: 100%;
+    margin: auto;
+    background: rgb(250, 250, 250);
+    border-radius: 15px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 5px 8px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.team-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 8px rgba(0, 0, 0, 0.5);
+    background: #e2e2e2;
+
+}
+
+.user-section {
+    border-left: 4px solid #4CAF50;
+    padding-left: 1rem;
+}
+
+.team-name {
+    color: #364C63;
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 0.05rem;
+    padding: 0.15rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid #EF6F53;
+    text-transform: uppercase;
+    text-align: center;
+    position: relative;
+}
+
+.team-name::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 2px;
+    background-color: #2196f3;
+}
+
+.user-row {
+    display: flex;
+    padding: 0.15rem;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+}
+
+.user-row:last-child {
+    border-bottom: none;
+}
+
+.user-row:hover {
+    background-color: #f9f9f9;
+}
+
+.user-row.header {
+    background-color: #364C63;
+    font-weight: bold;
+    color: white;
+    border-bottom: 1px solid #ddd;
+    border-radius: 6px 6px 0 0;
+}
+
+.user-row.header .user-col {
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.user-col {
+    flex: 1;
+    padding: 0.1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.9rem;
+}
+
+.user-col:first-child {
+    font-weight: 500;
+    color: #2196f3;
+}
+
+.user-col:nth-child(3) {
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.message-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 30px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    z-index: 9999;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    min-width: 300px;
+    text-align: center;
+    transition: opacity 0.3s ease-out;
+}
+
+.message-container.error {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    animation: slideDown 0.3s ease-out;
+}
+
+.message-container.success {
+    background-color: #dcfce7;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+    animation: slideDown 0.3s ease-out;
+}
+
+
+@keyframes slideDown {
+    from {
+        transform: translate(-50%, -100%);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .users-list {
+        grid-template-columns: 1fr;
+    }
+}

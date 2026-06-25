@@ -1,0 +1,165 @@
+.whatsapp-scanner-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.whatsapp-scanner-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  width: 300px;
+  transition: all 0.3s ease;
+}
+
+.whatsapp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.whatsapp-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.minimize-button {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.2s;
+}
+
+.minimize-button:hover {
+  color: #333;
+}
+
+.whatsapp-minimized {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background-color: #25d366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s;
+  z-index: 1000;
+}
+
+.whatsapp-minimized:hover {
+  transform: scale(1.1);
+}
+
+.whatsapp-minimized i {
+  color: white;
+  font-size: 24px;
+}
+
+.qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 15px 0;
+}
+
+.qr-container img {
+  width: 200px;
+  height: 200px;
+  margin-bottom: 10px;
+  border: 1px solid #eee;
+  border-radius: 5px;
+}
+
+.qr-container p {
+  color: #666;
+  text-align: center;
+  font-size: 14px;
+  margin: 0;
+}
+
+.status-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-radius: 5px;
+  margin: 10px 0;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.status-message i {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.status-message.connected {
+  background-color: #e7f7ed;
+  color: #1f8b4d;
+}
+
+.status-message.disconnected {
+  background-color: #fde8e8;
+  color: #e53e3e;
+}
+
+.status-message.reconnecting {
+  background-color: #fff8e6;
+  color: #b7791f;
+}
+
+.error-message {
+  background-color: #fde8e8;
+  color: #e53e3e;
+  padding: 12px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.refresh-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #25d366;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.refresh-button:hover {
+  background-color: #1fba59;
+}
+
+.refresh-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.fa-sync {
+  animation: spin 1s linear infinite;
+}

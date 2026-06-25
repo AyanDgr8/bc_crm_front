@@ -1,0 +1,148 @@
+/* src/components/routes/Reminder/Reminder.css */
+
+
+.reminders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.error-message {
+    color: #f44336;
+    padding: 15px;
+    text-align: center;
+    background-color: #ffebee;
+    border-radius: 4px;
+    margin: 20px;
+}
+
+.reminder-container {
+    padding: 10px;
+    width: 90%;
+    margin: 0 auto;
+    overflow-y: auto;
+    height: 70vh;
+}
+
+.reminder-head {
+    color: #EF6F53;
+    margin-bottom: 10px;
+    font-size: 1.25rem;
+    font-weight: bold;
+    letter-spacing: 0.05rem;
+    text-transform: uppercase;
+    text-align: center;
+    cursor: default;
+}
+
+.reminders-list {
+    display: grid;
+    gap: 20px;
+}
+
+.reminder-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 10px;
+    transition: transform 0.2s ease;
+    cursor: pointer;
+    width: 75%;
+    margin: auto;
+    border-bottom: 1px solid #3498db;
+}
+
+.reminder-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.reminder-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.reminder-header h3 {
+    margin: 0;
+    color: #3498db;
+    font-size: 1.1rem;
+}
+
+.team-badge {
+    background: #3498db;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+
+.reminder-comment {
+    margin: 5px;
+    font-size: 0.85rem;
+    line-height: 1.25;
+    color: #666;
+    font-weight: 600;
+}
+
+.reminder-time {
+    color: #7f8c8d;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.no-reminders {
+    text-align: center;
+    color: #666;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.error-message {
+    color: #e74c3c;
+    text-align: center;
+    padding: 10px;
+    margin: 10px 0;
+    background: #fde8e8;
+    border-radius: 4px;
+}
+
+.priority-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+    font-size: 11px;
+}
+
+.priority-badge.high {
+    background-color: #ff4444;
+    color: white;
+}
+
+.priority-badge.medium {
+    background-color: #ffbb33;
+    color: black;
+}
+
+.priority-badge.low {
+    background-color: #00C851;
+    color: white;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .reminder-item {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .customer-info, .time-info {
+        width: 100%;
+    }
+}

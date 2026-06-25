@@ -1,0 +1,24 @@
+/* src/components/routes/Other/Reports.js/Reports.css */
+
+
+.reports-title {
+    color: #EF6F53;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 0.05rem;
+    padding: 0.15rem;
+    text-transform: uppercase;
+}
+
+
+.date-pickerr{
+   margin: 2rem; 
+}
+
+.date-pickerr label{
+    margin-right: 0.5rem;
+}
+
+
+    
