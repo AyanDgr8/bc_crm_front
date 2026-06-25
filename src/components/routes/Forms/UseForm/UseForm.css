@@ -4,17 +4,15 @@
     display: flex;
     width: 85%;
     margin: auto;
-
 }
 
 .use-form-container {
     overflow-y: auto;
     background-color: #f4f4f4;
-    padding: 1rem;
     margin: auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
     position: relative;
-    height: 70vh;
+    height: 50vh;
     display: flex;
     flex-direction: column;
     flex: 0 0 80%;  
@@ -40,8 +38,6 @@
     font-size: 1.25rem;
     font-weight: bold;
     letter-spacing: 0.05rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
     cursor: default;
     text-transform: uppercase;
 }
@@ -74,8 +70,8 @@
     width: 50%; 
     background-color: white;
     color: #323232;
-    border: 1px solid #ccc;
-    border-radius: 10px;
+    border: 1px solid #b8c2cf;
+    border-radius: 8px;
     text-align: center;
 }
 
@@ -95,17 +91,21 @@
 
 .use-form-container input {
     flex: 1;
-    padding: 0.15rem;
-    border: none;
-    border-radius: 5px;
+    padding: 0.3rem 0.4rem;
+    border: 1px solid #b8c2cf;
+    border-radius: 8px;
     font-size: 0.75rem;
-    transition: border-color 0.3s ease;
+    background: #ffffff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     color: #323232;
     width: 100%;
 }
 
-.use-form-container input:focus {
-    border-color: #1c2e40;
+.use-form-container input:focus,
+.label-inputt select:focus,
+.label-inputt.comment .comet:focus {
+    border-color: #EF6F53;
+    box-shadow: 0 0 0 3px rgba(239, 111, 83, 0.14);
     outline: none;
 }
 
@@ -135,11 +135,12 @@
 .label-inputt.comment .comet {
     width: 100%;
     resize: vertical;
-    padding: 0.15rem;
-    border: none;
-    border-radius: 5px;
+    padding: 0.3rem 0.4rem;
+    border: 1px solid #b8c2cf;
+    border-radius: 8px;
     font-size: 0.75rem;
-    transition: border-color 0.3s ease;
+    background: #ffffff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     color: #323232;
 }
 

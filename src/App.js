@@ -4,6 +4,7 @@
 import React from 'react';
 import './App.css';
 import Main from './components/Main/Main';
+import './theme-cards.css';
 // import UCP from './components/routes/Other/UCP/UCP';
 
 function App() {

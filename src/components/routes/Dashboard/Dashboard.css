@@ -9,19 +9,6 @@
     height: 85vh;
 }
 
-.dashboard-header {
-    background-color: #2c3e50;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    margin: 0;
-    color: white;
-}
-
-.header-info {
-    flex: 1;
-}
-
 .header-boxes {
     display: flex;
     flex-direction: column;
@@ -48,6 +35,12 @@
 .dashboard-content {
     display: flex;
     flex: 1;
+    min-width: 0;
+}
+
+.dashboard-content--full {
+    display: block;
+    overflow: hidden;
 }
 
 .sidebar {
@@ -172,16 +165,14 @@
     flex: 1;
     padding: 5px;
     overflow-y: auto;
+    min-width: 0;
     background-color: white;
     border-radius: 5px;
     margin: 5px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.usernameee{
-    font-size: 20px;
-    text-align: right;
-}
-.datetimer{
-    font-size: 12px;
+.dashboard-content--full .main-contenttt {
+    width: calc(100% - 10px);
+    height: calc(100% - 10px);
 }

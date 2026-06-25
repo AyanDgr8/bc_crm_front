@@ -178,10 +178,6 @@ const ZForm = () => {
             {/* Approve user route */}
             <Route path="/approve-user/:token" element={<ApproveUser />} />
             
-            {/* Dashboard routes */}
-            <Route path="/dashboard/team/:teamName/:phone_no_primary" element={<UseForm />} />
-            <Route path="/dashboard/customer/:id" element={<UseForm />} />
-            
             {/* Email Reports */}
             <Route path="/reports" element={
                 <BrandRoute>

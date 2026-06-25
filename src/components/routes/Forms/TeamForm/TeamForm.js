@@ -14,6 +14,7 @@ const TeamForm = () => {
     const [error, setError] = useState('');
     const [editingMember, setEditingMember] = useState(null);
     const [role, setRole] = useState(null);
+    const [activeTab, setActiveTab] = useState('about');
     const [memberFormData, setMemberFormData] = useState({
         username: '',
         designation: '',
@@ -58,8 +59,8 @@ const TeamForm = () => {
                         throw new Error('Business center ID not found. Please log in again.');
                     }
                     apiEndpoint = `${process.env.REACT_APP_API_URL}/business/${businessCenterId}/teams`;
-                } else if (userData.role === 'brand_user') {
-                    // For brand users, use the business ID from route or localStorage
+                } else if (userData.role === 'brand_user' || userData.role === 'admin') {
+                    // For brand users and admins, use the business ID from route or localStorage
                     const businessId = routeBusinessId || localStorage.getItem('businessId');
                     if (!businessId) {
                         throw new Error('Business ID not found. Please log in again.');
@@ -148,13 +149,6 @@ const TeamForm = () => {
         navigate(path);
     };
     
-    const handleHomeClickk = () => {
-        const path = role === 'receptionist'
-            ? `/dashboard/business/center/${teamDetails.business_center_id}`
-            : `/business/center/${teamDetails.business_center_id}`;
-        navigate(path);
-    };
-
     const handleMemberEdit = (member) => {
         setEditingMember(member);
         setMemberFormData({
@@ -295,66 +289,63 @@ const TeamForm = () => {
         return <div className="error">Team not found</div>;
     }
 
+    const displayTeamName = teamDetails.team_name.replace(/_/g, ' ');
     return (
         <div className="team-form-container">
-            <div className="team-titlee">
-                <div className="header-left">
-                    <img 
-                    src="/uploads/house-fill.svg"
-                    className="home-icon"
-                    alt="home icon"
-                    aria-label="Home"
-                    onClick={handleHomeClickk}
-                    />
-                </div>    
-                <h1 className="team-name">{teamDetails.team_name.replace(/_/g, ' ')}</h1>
-                <button className="view-records-btn" onClick={handleViewRecords}>
-                    View Records
-                </button>
-            </div>
-            <div>
-                {/* <strong>PROMPT</strong> */}
-                <p className="team-prompt">{teamDetails.team_prompt || 'No team prompt available'}</p>
+            <div className="team-titlee team-hero">
+                <div className="team-hero-row">
+                    <h1 className="team-name">{displayTeamName}</h1>
+                    <button className="view-records-btn" onClick={handleViewRecords}>
+                        View Records
+                    </button>
+                    <button className="add-record-btn hero-add-record" onClick={handleAddRecord}>
+                        Add New Record
+                    </button>
+                </div>   
             </div>
 
-            <div className="team-info">
-                <div className="info-section">
-                    <h2>Company Details</h2>
-                    <div className="detail-item">
-                        <span className='info_pair'>
-                            <label>Phone No:</label>
-                            <span>{teamDetails.team_phone || 'N/A'}</span>
-                        </span>
-                        <span className='info_pair'>
-                            <label>Email:</label>
-                            <span>{teamDetails.team_email || 'N/A'}</span>
-                        </span>
-                    </div>
-                    <div className="detail-item">
-                        <span className='info_pair'>
-                            <label>Registration No:</label>
-                            <span>{teamDetails.reg_no || 'N/A'}</span>
-                        </span>
-                        <span className='info_pair'>
-                            <label>Tax ID:</label>
-                            <span>{teamDetails.tax_id || 'N/A'}</span>
-                        </span>
-                    </div>
-                    <div className="detail-item">
-                        <span className='info_pair'>
-                            <label>Address:</label>
-                            <span>{teamDetails.team_address || 'N/A'}, {teamDetails.team_country || 'N/A'}</span>
-                        </span>
-                    </div>
-                </div>
-                <div className="info-section">
+            <p className="team-prompt">{teamDetails.team_prompt || 'No team prompt available'}</p>
+
+            <div className="team-tabs" role="tablist" aria-label="Company sections">
+                <button
+                    type="button"
+                    className={activeTab === 'about' ? 'active' : ''}
+                    onClick={() => setActiveTab('about')}
+                >
+                    About
+                </button>
+                <button
+                    type="button"
+                    className={activeTab === 'details' ? 'active' : ''}
+                    onClick={() => setActiveTab('details')}
+                >
+                    Details
+                </button>
+                <button
+                    type="button"
+                    className={activeTab === 'associates' ? 'active' : ''}
+                    onClick={() => setActiveTab('associates')}
+                >
+                    Associates
+                </button>
+            </div>
+
+            <div className="team-tab-panel">
+                {activeTab === 'about' && (
+                <div className="info-section about-section">
                     <h2>Company Description</h2>
                     <p className="team-detail">{teamDetails.team_detail || 'No description available'}</p>
                 </div>
-            </div>
+                )}
 
+                {activeTab === 'associates' && (
             <div className="team-memberss">
-                <h2>Company Members ({teamMembers.length})</h2>
+                <div className="team-members-header">
+                    <div>
+                        <span className="team-eyebrow">Associates</span>
+                        <h2>Company Members ({teamMembers.length})</h2>
+                    </div>
+                </div>
 
                 {/* Success and Error Messages */}
                 {success && <div className="success-message">{success}</div>}
@@ -484,12 +475,24 @@ const TeamForm = () => {
             )}
                 {/* Members Grid */}
                 <div className="members-grid">
-                    {teamMembers.map((member) => (
+                    {teamMembers.length === 0 && (
+                        <div className="empty-members">
+                            <strong>No associates added yet.</strong>
+                            <span>Create associates for this company to start assigning records.</span>
+                        </div>
+                    )}
+                    {teamMembers.map((member) => {
+                        return (
                         <div key={member.id} className="member-card">
-                            <h3>{member.username}</h3>
+                            <div className="member-card-header">
+                                <div>
+                                    <h3>{member.username}</h3>
+                                    <span>{member.designation || 'Associate'}</span>
+                                </div>
+                            </div>
                             <div className="member-details">
                                 <p><strong>Department:</strong> {member.department}</p>
-                                <p><strong>Designation:</strong> {member.designation}</p>
+                                <p><strong>Extension:</strong> {member.extension || 'N/A'}</p>
                                 <p><strong>Email:</strong> {member.email}</p>
                                 <p><strong>Phone:</strong> <a href={`tel:${member.mobile_num}`}>{member.mobile_num}</a></p>
                             </div>
@@ -500,14 +503,43 @@ const TeamForm = () => {
                                 </div>
                             )}
                         </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
+                )}
 
-            <div className="bottom-actions">
-                <button className="add-record-btn" onClick={handleAddRecord}>
-                    Add New Record
-                </button>
+                {activeTab === 'details' && (
+                <div className="info-section details-section">
+                    <h2>Company Details</h2>
+                    <div className="detail-item">
+                        <span className='info_pair'>
+                            <label>Phone No:</label>
+                            <span>{teamDetails.team_phone || 'N/A'}</span>
+                        </span>
+                        <span className='info_pair'>
+                            <label>Email:</label>
+                            <span>{teamDetails.team_email || 'N/A'}</span>
+                        </span>
+                    </div>
+                    <div className="detail-item">
+                        <span className='info_pair'>
+                            <label>Registration No:</label>
+                            <span>{teamDetails.reg_no || 'N/A'}</span>
+                        </span>
+                        <span className='info_pair'>
+                            <label>Tax ID:</label>
+                            <span>{teamDetails.tax_id || 'N/A'}</span>
+                        </span>
+                    </div>
+                    <div className="detail-item">
+                        <span className='info_pair'>
+                            <label>Address:</label>
+                            <span>{teamDetails.team_address || 'N/A'}, {teamDetails.team_country || 'N/A'}</span>
+                        </span>
+                    </div>
+                </div>
+                )}
             </div>
         </div>
     );

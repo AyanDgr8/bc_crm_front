@@ -20,6 +20,12 @@ const UseForm = () => {
     const [editingInfo, setEditingInfo] = useState(false);
     const alertShownRef = useRef(false);
 
+    const getMinDateTimeLocal = () => {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        return now.toISOString().slice(0, 16);
+    };
+
     // Get team name from URL params or state
     const teamNameFromURL = location.pathname.split('/')[2];
     const queueNameFromState = location.state?.queueName;
@@ -281,6 +287,12 @@ const UseForm = () => {
             return;
         }
 
+        if (formData.scheduled_at && new Date(formData.scheduled_at) <= new Date()) {
+            setError('Schedule call time must be a future date and time.');
+            setLoading(false);
+            return;
+        }
+
         try {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -501,6 +513,7 @@ const UseForm = () => {
                                     name="scheduled_at"
                                     value={formData.scheduled_at || ''}
                                     onChange={handleInputChange}
+                                    min={getMinDateTimeLocal()}
                                     onKeyDown={(e) => e.preventDefault()}
                                     onClick={handleScheduledAtClick}
                                     style={{ cursor: 'pointer' }}

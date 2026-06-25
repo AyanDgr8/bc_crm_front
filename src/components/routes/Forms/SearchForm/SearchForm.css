@@ -123,6 +123,22 @@ padding: 0.25rem;
 .customers-table td {
   padding: 0.25rem;
   border-bottom: 1px solid #eee;
+  overflow-wrap: anywhere;
+}
+
+.customers-table th:nth-child(2),
+.customers-table td:nth-child(2) {
+  min-width: 120px;
+}
+
+.customers-table th:nth-child(2) {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.customers-table td:nth-child(2) {
+  color: #364C63;
+  font-weight: 600;
 }
 
 .customers-table tr:hover {

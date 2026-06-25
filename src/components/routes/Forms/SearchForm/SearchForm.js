@@ -12,7 +12,7 @@ const SearchForm = () => {
   const [selectedRecords, setSelectedRecords] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [recordsPerPage] = useState(8);
+  const [recordsPerPage] = useState(15);
   const [teamName, setTeamName] = useState(''); 
   const [teamMembers, setTeamMembers] = useState([]);
   const [businessId, setBusinessId] = useState(null);
@@ -63,7 +63,9 @@ const SearchForm = () => {
         }
       });
 
-      if (response.data && response.data.data) {
+      if (response.data?.data?.records && Array.isArray(response.data.data.records)) {
+        setSearchResults(response.data.data.records);
+      } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
         setSearchResults(response.data.data);
       } else if (response.data && Array.isArray(response.data)) {
         setSearchResults(response.data);
@@ -82,17 +84,6 @@ const SearchForm = () => {
     }
   };
 
-
-  const handleAddRecord = () => {
-    const query = new URLSearchParams(location.search);
-    const teamName = query.get('team');
-    const path = userRole === 'receptionist'
-      ? `/dashboard/customers/create?team=${teamName}`
-      : `/customers/create?team=${teamName}`;
-    if (teamName) {
-      navigate(path);
-    }
-  };
 
   const handleHomeClick = () => {
     // Get current businessId from state or URL
@@ -113,19 +104,20 @@ const SearchForm = () => {
     fetchData();
     // fetchTeamMembers();
     const query = new URLSearchParams(location.search);
-    const team = query.get('team');
+    const team = query.get('team') || query.get('query');
     if (team) {
       setTeamName(team);
     }
+    setCurrentPage(1);
   }, [location.search, navigate]);
 
   const handleEdit = (customer) => {
     const query = new URLSearchParams(location.search);
-    const teamName = query.get('team') || localStorage.getItem('currentQueue');
-    navigate(`/dashboard/team/${teamName}/${customer.phone_no_primary}`, {
+    const recordTeamName = customer.QUEUE_NAME || query.get('team') || localStorage.getItem('currentQueue');
+    navigate(`/dashboard/team/${recordTeamName}/${customer.phone_no_primary}`, {
       state: {
         customer,
-        queueName: teamName
+        queueName: recordTeamName
       }
     });
   };
@@ -163,12 +155,9 @@ const SearchForm = () => {
             />
           </div>
           <div className="header-center">
-            <h2 className="list_form_headi">{teamName ? `${teamName.replace(/_/g, ' ')}` : 'Records'}</h2>
-          </div>
-          <div className="header-right">
-            <button className="add-record-btnnn" onClick={handleAddRecord}>
-              Add New Record
-            </button>
+            <h2 className="list_form_headi">
+              {teamName ? `Search results for ${teamName.replace(/_/g, ' ')}` : 'Search results'}
+            </h2>
           </div>
       </div>
         {loading ? (
@@ -179,13 +168,15 @@ const SearchForm = () => {
               <table className="customers-table">
                 <thead>
                   <tr>
-                    <th>ID</th>
                     <th>Name</th>
                     <th>Phone</th>
                     <th>Email</th>
+                    <th>Company</th>
+                    <th>Reminder Time</th>
                     <th>Designation</th>
                     <th>Disposition</th>
                     <th>Comment</th>
+                    <th>Created Time</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -195,13 +186,15 @@ const SearchForm = () => {
                       className={selectedRecords.includes(customer.C_unique_id) ? 'selected-row' : ''}
                       onClick={() => handleEdit(customer)}
                     >
-                      <td>{customer.C_unique_id}</td>
                       <td>{customer.customer_name}</td>
                       <td><a href={`tel:${customer.phone_no_primary}`}>{customer.phone_no_primary}</a></td>
                       <td>{customer.email_id}</td>
+                      <td>{(customer.QUEUE_NAME || customer.company_name || 'N/A').replace(/_/g, ' ')}</td>
+                      <td>{formatDateTime(customer.scheduled_at)}</td>
                       <td>{customer.designation}</td>
                       <td>{customer.disposition}</td>
                       <td>{customer.comment}</td>
+                      <td>{formatDateTime(customer.date_created || customer.created_at)}</td>
                     </tr>
                   ))}
                 </tbody>

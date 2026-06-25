@@ -1,0 +1,241 @@
+:root {
+  --crm-surface: #ffffff;
+  --crm-surface-soft: #f8fafc;
+  --crm-ink: #243447;
+  --crm-muted: #667085;
+  --crm-line: rgba(25, 118, 210, 0.14);
+  --crm-blue: #1976d2;
+  --crm-blue-dark: #24516f;
+  --crm-coral: #ef6f53;
+  --crm-green: #18a058;
+  --crm-shadow: 0 12px 30px rgba(36, 52, 71, 0.12);
+  --crm-shadow-hover: 0 18px 38px rgba(36, 52, 71, 0.18);
+}
+
+body {
+  background:
+    linear-gradient(180deg, #f7fbff 0%, #f2f5f8 45%, #eef3f8 100%);
+  color: var(--crm-ink);
+}
+
+.main-contenttt,
+.list-container,
+.use-form-container,
+.create-form-container,
+.custom-form-container,
+.admin-portal,
+.sectionnn,
+.sectionnnnn,
+.brand-form,
+.business-form,
+.receptionist-form,
+.forgot-password-container,
+.reset-password-container,
+.login-container,
+.register-container,
+.data-table-container {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1px solid rgba(25, 118, 210, 0.12) !important;
+  border-radius: 8px !important;
+  box-shadow: var(--crm-shadow) !important;
+}
+
+.brand-card,
+.business-card,
+.receptionist-card,
+.team-card,
+.team-section,
+.associate-card,
+.teeam-carrd,
+.membeer-card,
+.info-box,
+.form-section {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 255, 0.96)) !important;
+  border: 1px solid var(--crm-line) !important;
+  border-bottom: 3px solid rgba(239, 111, 83, 0.74) !important;
+  border-radius: 8px !important;
+  box-shadow: var(--crm-shadow) !important;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease !important;
+}
+
+.brand-card::before,
+.business-card::before,
+.receptionist-card::before,
+.team-card::before,
+.team-section::before,
+.associate-card::before,
+.teeam-carrd::before,
+.membeer-card::before,
+.info-box::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--crm-blue), var(--crm-coral));
+  opacity: 0.92;
+}
+
+.brand-card:hover,
+.business-card:hover,
+.receptionist-card:hover,
+.team-card:hover,
+.team-section:hover,
+.associate-card:hover,
+.teeam-carrd:hover,
+.membeer-card:hover,
+.info-box:hover {
+  transform: translateY(-4px) !important;
+  border-color: rgba(239, 111, 83, 0.34) !important;
+  box-shadow: var(--crm-shadow-hover) !important;
+}
+
+.brand-info h3,
+.business-info h3,
+.receptionist-info h3,
+.team-header h3,
+.teeamm-name,
+.membeer-card h3 {
+  color: var(--crm-blue-dark) !important;
+  letter-spacing: 0 !important;
+}
+
+.brand-info h3,
+.business-info h3,
+.receptionist-info h3,
+.team-header h3 {
+  border-bottom: 1px solid rgba(25, 118, 210, 0.18) !important;
+  padding-bottom: 8px;
+}
+
+.brand-info p,
+.business-info p,
+.receptionist-info p,
+.membwer-details p,
+.team-card p,
+.associate-card p {
+  color: var(--crm-muted) !important;
+  line-height: 1.45;
+}
+
+.brand-info strong,
+.business-info strong,
+.receptionist-info strong,
+.membwer-details strong,
+.team-card strong,
+.associate-card strong {
+  color: var(--crm-ink) !important;
+}
+
+.info-box.active-companies {
+  background:
+    linear-gradient(135deg, var(--crm-blue-dark), var(--crm-blue)) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  border-bottom-color: var(--crm-coral) !important;
+}
+
+.info-box.call-details {
+  background:
+    linear-gradient(135deg, #eff6ff, #dcecff) !important;
+}
+
+.info-box.stats-details {
+  background:
+    linear-gradient(135deg, #fff7ed, #eef8ff) !important;
+}
+
+.teeamm-name {
+  background:
+    linear-gradient(135deg, var(--crm-blue-dark), var(--crm-blue)) !important;
+  color: #ffffff !important;
+}
+
+.brand-cards-container,
+.business-cards-container,
+.receptionist-cards-container,
+.teaaamms-grid,
+.teams-section {
+  scrollbar-color: var(--crm-coral) #dce6ef !important;
+}
+
+.brand-cards-container::-webkit-scrollbar-thumb,
+.business-cards-container::-webkit-scrollbar-thumb,
+.receptionist-cards-container::-webkit-scrollbar-thumb,
+.teaaamms-grid::-webkit-scrollbar-thumb,
+.teams-section::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, var(--crm-blue), var(--crm-coral)) !important;
+}
+
+.brand-actions button,
+.business-actions button,
+.receptionist-actions button,
+.forrm-actions button,
+.submit-buttonn,
+.add-brand-btn,
+.add-business-btn,
+.add-receptionist-btn,
+.add-team-button,
+.create-button {
+  border-radius: 6px !important;
+  box-shadow: 0 6px 14px rgba(36, 52, 71, 0.12);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    filter 160ms ease !important;
+}
+
+.brand-actions button:hover,
+.business-actions button:hover,
+.receptionist-actions button:hover,
+.forrm-actions button:hover,
+.submit-buttonn:hover,
+.add-brand-btn:hover,
+.add-business-btn:hover,
+.add-receptionist-btn:hover,
+.add-team-button:hover,
+.create-button:hover {
+  filter: brightness(1.04);
+  transform: translateY(-1px) !important;
+  box-shadow: 0 9px 20px rgba(36, 52, 71, 0.18);
+}
+
+.form-groupppp input,
+.form-groupppp textarea,
+.form-groupppp select,
+.labell-input input,
+.labell-input select,
+.use-form-container input,
+.use-form-container textarea,
+.use-form-container select {
+  border-color: rgba(36, 52, 71, 0.18) !important;
+  border-radius: 6px !important;
+  background: #ffffff !important;
+}
+
+.form-groupppp input:focus,
+.form-groupppp textarea:focus,
+.form-groupppp select:focus,
+.labell-input input:focus,
+.labell-input select:focus,
+.use-form-container input:focus,
+.use-form-container textarea:focus,
+.use-form-container select:focus {
+  border-color: var(--crm-blue) !important;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.14) !important;
+}
+
+@media (max-width: 768px) {
+  .brand-card,
+  .business-card,
+  .receptionist-card,
+  .team-card,
+  .teeam-carrd {
+    width: min(92vw, 350px) !important;
+  }
+}

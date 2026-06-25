@@ -2,12 +2,23 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
-import { usePopup } from '../../../../context/PopupContext';
 import { useNavigate } from 'react-router-dom';
 import './Reminder.css';
 
+const sortReminders = (items) => {
+    const now = new Date();
+    return [...items].sort((a, b) => {
+        const aTime = new Date(a.scheduled_at);
+        const bTime = new Date(b.scheduled_at);
+        const aPast = aTime < now;
+        const bPast = bTime < now;
+
+        if (aPast !== bPast) return aPast ? 1 : -1;
+        return aTime - bTime;
+    });
+};
+
 const Reminder = () => {
-    const { addPopupMessage } = usePopup();
     const [reminders, setReminders] = useState([]);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -80,12 +91,7 @@ const Reminder = () => {
             });
 
             if (response.data && Array.isArray(response.data)) {
-                const now = new Date();
-                const futureReminders = response.data
-                    .filter(reminder => new Date(reminder.scheduled_at) > now)
-                    .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
-
-                setReminders(futureReminders);
+                setReminders(sortReminders(response.data));
                 setError(null);
             }
         } catch (fallbackError) {
@@ -111,12 +117,7 @@ const Reminder = () => {
             });
 
             if (response.data && Array.isArray(response.data)) {
-                const now = new Date();
-                const futureReminders = response.data
-                    .filter(reminder => new Date(reminder.scheduled_at) > now)
-                    .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
-
-                setReminders(futureReminders);
+                setReminders(sortReminders(response.data));
                 setError(null);
             } else {
                 setReminders([]);
@@ -155,42 +156,95 @@ const Reminder = () => {
     };
 
     const handleReminderClick = (reminder) => {
-        navigate(`/customers/phone/${reminder.phone_no_primary}`, {
+        navigate(`/dashboard/team/${reminder.QUEUE_NAME}/${reminder.phone_no_primary}`, {
             state: { customer: reminder }
         });
     };
 
+    const getMinutesUntil = (scheduledAt) => {
+        return Math.floor((new Date(scheduledAt) - new Date()) / (1000 * 60));
+    };
+
+    const getReminderTone = (scheduledAt) => {
+        const minutesUntil = getMinutesUntil(scheduledAt);
+        if (minutesUntil < 0) return 'past';
+        if (minutesUntil <= 5) return 'urgent';
+        if (minutesUntil <= 15) return 'soon';
+        return 'later';
+    };
+
+    const getCompanyName = (reminder) => reminder.QUEUE_NAME || reminder.team_name || 'Unknown Company';
+
+    const groupedReminders = reminders.reduce((groups, reminder) => {
+        const company = getCompanyName(reminder);
+        if (!groups[company]) groups[company] = [];
+        groups[company].push(reminder);
+        return groups;
+    }, {});
+
+    const companyGroups = Object.entries(groupedReminders)
+        .map(([company, items]) => ({
+            company,
+            items: sortReminders(items),
+            activeItems: sortReminders(items.filter((item) => new Date(item.scheduled_at) >= new Date())),
+            pastItems: sortReminders(items.filter((item) => new Date(item.scheduled_at) < new Date())),
+            activeCount: items.filter((item) => new Date(item.scheduled_at) >= new Date()).length,
+            firstTime: sortReminders(items)[0]?.scheduled_at
+        }))
+        .sort((a, b) => new Date(a.firstTime) - new Date(b.firstTime));
+
     return (
         <div>
-            <h2 className='reminder-head'>Upcoming Reminders</h2>
+            <h2 className='reminder-head'>Reminders</h2>
             <div className="reminder-container">
             {error && <div className="error-message">{error}</div>}
             <div className="reminders-list">
-                {reminders && reminders.length > 0 ? (
-                    reminders.map((reminder) => (
-                        <div 
-                            key={reminder.id} 
-                            className="reminder-card"
-                            onClick={() => handleReminderClick(reminder)}
-                        >
-                            <div className="reminder-header">
-                                <h3>{reminder.customer_name}</h3>
-                                <span className="team-badge">
-                                    {reminder.QUEUE_NAME.replace(/\s+/g, '_')}
-                                </span>
+                {companyGroups.length > 0 ? (
+                    companyGroups.map((group) => (
+                        <section className="reminder-company-card" key={group.company}>
+                            <div className="reminder-company-header">
+                                <h3>{group.company.replace(/_/g, ' ')}</h3>
+                                <span>{group.activeCount}</span>
                             </div>
-                            <div className="reminder-content">
-                                <p className="reminder-comment">{reminder.comment}</p>
-                                <div className="reminder-time">
-                                    <i className="far fa-clock"></i>
-                                    {formatDateTime(reminder.scheduled_at)}
+                            <div className="company-reminders">
+                                <div className="active-reminders">
+                                    {group.activeItems.map((reminder) => (
+                                        <div
+                                            key={`${reminder.id}-${reminder.scheduled_at}`}
+                                            className={`reminder-card ${getReminderTone(reminder.scheduled_at)}`}
+                                            onClick={() => handleReminderClick(reminder)}
+                                        >
+                                            <div className="reminder-header">
+                                                <h4>{reminder.customer_name || 'Unnamed Customer'}</h4>
+                                                <span>{formatDateTime(reminder.scheduled_at)}</span>
+                                            </div>
+                                            <p className="reminder-comment">{reminder.comment || 'No comment'}</p>
+                                        </div>
+                                    ))}
                                 </div>
+                                {group.pastItems.length > 0 && (
+                                    <div className="past-reminders">
+                                        {group.pastItems.map((reminder) => (
+                                            <div
+                                                key={`${reminder.id}-${reminder.scheduled_at}`}
+                                                className={`reminder-card ${getReminderTone(reminder.scheduled_at)}`}
+                                                onClick={() => handleReminderClick(reminder)}
+                                            >
+                                                <div className="reminder-header">
+                                                    <h4>{reminder.customer_name || 'Unnamed Customer'}</h4>
+                                                    <span>{formatDateTime(reminder.scheduled_at)}</span>
+                                                </div>
+                                                <p className="reminder-comment">{reminder.comment || 'No comment'}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                        </div>
+                        </section>
                     ))
                 ) : (
                     <div className="no-reminders">
-                        No upcoming reminders found
+                        No reminders found
                     </div>
                 )}
             </div>

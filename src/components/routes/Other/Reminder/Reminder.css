@@ -1,148 +1,209 @@
 /* src/components/routes/Reminder/Reminder.css */
 
-
-.reminders-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.error-message {
-    color: #f44336;
-    padding: 15px;
+.reminder-head {
+    color: #364C63;
+    margin: 0;
+    padding: 10px 12px 4px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0;
     text-align: center;
-    background-color: #ffebee;
-    border-radius: 4px;
-    margin: 20px;
 }
 
 .reminder-container {
-    padding: 10px;
-    width: 90%;
-    margin: 0 auto;
+    width: 100%;
+    padding: 8px 10px 12px;
     overflow-y: auto;
-    height: 70vh;
-}
-
-.reminder-head {
-    color: #EF6F53;
-    margin-bottom: 10px;
-    font-size: 1.25rem;
-    font-weight: bold;
-    letter-spacing: 0.05rem;
-    text-transform: uppercase;
-    text-align: center;
-    cursor: default;
+    overflow-x: hidden;
 }
 
 .reminders-list {
-    display: grid;
-    gap: 20px;
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 4px 2px 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #EF6F53 #edf1f5;
+}
+
+.reminders-list::-webkit-scrollbar {
+    height: 8px;
+}
+
+.reminders-list::-webkit-scrollbar-track {
+    background: #edf1f5;
+    border-radius: 8px;
+}
+
+.reminders-list::-webkit-scrollbar-thumb {
+    background: #EF6F53;
+    border-radius: 8px;
+}
+
+.reminder-company-card {
+    flex: 0 0 340px;
+    height: calc(70vh - 20px);
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(54, 76, 99, 0.12);
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 12px 28px rgba(31, 46, 64, 0.08);
+    overflow: hidden;
+}
+
+.reminder-company-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #364C63;
+    color: #ffffff;
+}
+
+.reminder-company-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+.reminder-company-header span {
+    flex: 0 0 auto;
+    min-width: 26px;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    text-align: center;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.company-reminders {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+.active-reminders,
+.past-reminders {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(54, 76, 99, 0.32) transparent;
+}
+
+.active-reminders {
+    flex: 0 0 80%;
+    max-height: 80%;
+}
+
+.past-reminders {
+    flex: 0 0 20%;
+    max-height: 20%;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(54, 76, 99, 0.16);
+}
+
+.past-reminders:empty {
+    display: none;
 }
 
 .reminder-card {
-    background: white;
+    border: 1px solid rgba(54, 76, 99, 0.12);
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    padding: 10px;
-    transition: transform 0.2s ease;
+    padding: 9px;
     cursor: pointer;
-    width: 75%;
-    margin: auto;
-    border-bottom: 1px solid #3498db;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .reminder-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(31, 46, 64, 0.12);
+}
+
+.reminder-card.later {
+    background: #eaf7ef;
+    border-color: #b7e2c6;
+}
+
+.reminder-card.soon {
+    background: #fff2dd;
+    border-color: #ffd49b;
+}
+
+.reminder-card.urgent {
+    background: #ffe8e8;
+    border-color: #ffb1b1;
+}
+
+.reminder-card.past {
+    background: #edf0f3;
+    border-color: #d4dbe3;
+    color: #697789;
 }
 
 .reminder-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    gap: 8px;
 }
 
-.reminder-header h3 {
+.reminder-header h4 {
     margin: 0;
-    color: #3498db;
-    font-size: 1.1rem;
+    color: #26384d;
+    font-size: 0.92rem;
+    font-weight: 800;
+    overflow-wrap: anywhere;
 }
 
-.team-badge {
-    background: #3498db;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 5px;
-    font-size: 0.9rem;
+.reminder-header span {
+    flex: 0 0 auto;
+    color: #52657a;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-align: right;
 }
-
 
 .reminder-comment {
-    margin: 5px;
-    font-size: 0.85rem;
-    line-height: 1.25;
-    color: #666;
-    font-weight: 600;
+    margin: 6px 0 0;
+    color: #4f6075;
+    font-size: 0.82rem;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
 }
 
-.reminder-time {
-    color: #7f8c8d;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
+.error-message,
 .no-reminders {
+    padding: 18px;
+    color: #66788f;
     text-align: center;
-    color: #666;
-    padding: 20px;
-    background: #f8f9fa;
+    border: 1px dashed rgba(54, 76, 99, 0.18);
     border-radius: 8px;
+    background: #ffffff;
 }
 
 .error-message {
-    color: #e74c3c;
-    text-align: center;
-    padding: 10px;
-    margin: 10px 0;
-    background: #fde8e8;
-    border-radius: 4px;
+    color: #c0392b;
+    background: #fff1f1;
+    border-color: #f1bbbb;
 }
 
-.priority-badge {
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-weight: bold;
-    text-align: center;
-    font-size: 11px;
-}
-
-.priority-badge.high {
-    background-color: #ff4444;
-    color: white;
-}
-
-.priority-badge.medium {
-    background-color: #ffbb33;
-    color: black;
-}
-
-.priority-badge.low {
-    background-color: #00C851;
-    color: white;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    .reminder-item {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .customer-info, .time-info {
-        width: 100%;
+@media (max-width: 720px) {
+    .reminder-company-card {
+        flex-basis: 290px;
     }
 }

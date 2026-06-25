@@ -72,6 +72,65 @@
   gap: 0.5rem;
 }
 
+.company-choice-panel,
+.selected-company-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.6rem;
+  border: 1px solid #d6dde7;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(31, 46, 64, 0.06);
+}
+
+.company-choice-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.company-choice-panel label,
+.selected-company-strip span {
+  flex: 0 0 auto;
+  min-width: 120px;
+  color: #364C63;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.company-choice-panel select {
+  flex: 1;
+  min-height: 36px;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #b8c2cf;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #26384d;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.company-choice-panel select:focus {
+  border-color: #EF6F53;
+  box-shadow: 0 0 0 3px rgba(239, 111, 83, 0.14);
+}
+
+.selected-company-strip {
+  justify-content: flex-start;
+  background: #f8fafc;
+}
+
+.selected-company-strip strong {
+  color: #EF6F53;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
 .form-section {
   background: #f8f9fa;
   border-radius: 8px;
@@ -140,6 +199,33 @@
   color: #d32f2f;
 }
 
+.notification-checkboxes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.35rem;
+  border: 1px solid #d6dde7;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.notification-checkboxes label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #364C63;
+  font-size: 0.86rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.notification-checkboxes input {
+  width: 16px;
+  height: 16px;
+  accent-color: #EF6F53;
+}
+
 .buttonn-container {
   text-align: center;
   padding: 0.25rem;
@@ -174,5 +260,22 @@
   
   .form-section {
     padding: 0.5rem;
+  }
+
+  .company-choice-panel,
+  .selected-company-strip {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .company-choice-panel label,
+  .selected-company-strip span {
+    min-width: 0;
+  }
+
+  .company-choice-field {
+    align-items: stretch;
+    flex-direction: column;
   }
 }

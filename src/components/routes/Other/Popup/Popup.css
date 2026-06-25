@@ -14,95 +14,193 @@
 
 .popup-container {
     position: fixed;
-    top: 100px;
-    right: 20px;
-    z-index: 1000;
+    top: 92px;
+    right: 18px;
+    z-index: 1200;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    max-width: 250px;
+    gap: 12px;
+    width: min(360px, calc(100vw - 28px));
     max-height: 75vh;
     overflow-y: auto;
+    padding: 2px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(54, 76, 99, 0.35) transparent;
 }
 
 .popup-message {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    padding: 2px;
-    cursor: pointer;
     position: relative;
-    animation: slideIn 0.2s ease-out;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid rgba(54, 76, 99, 0.12);
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 18px 38px rgba(31, 46, 64, 0.18);
+    padding: 13px 42px 13px 14px;
+    cursor: pointer;
+    animation: slideIn 0.22s ease-out;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     text-align: left;
+    font-family: inherit;
 }
 
 .popup-message:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px) translateX(-2px);
+    box-shadow: 0 22px 44px rgba(31, 46, 64, 0.22);
 }
 
 .popup-message.high,
 .popup-message.red {
-    border-left: 4px solid #f44336;
-    background-color: #ffcdd2;
+    border-color: #ffb1b1;
+    background: linear-gradient(135deg, #fffafa 0%, #ffe7e7 100%);
+    color: #6d2020;
 }
 
 .popup-message.medium,
 .popup-message.orange {
-    border-left: 4px solid #ff9800;
-    background-color: #ffe0b2;
+    border-color: #ffd49b;
+    background: linear-gradient(135deg, #fffaf0 0%, #ffefd7 100%);
+    color: #70430f;
 }
 
 .popup-message.low,
 .popup-message.green {
-    border-left: 4px solid #4caf50;
-    background-color: #c8e6c9;
+    border-color: #afe0bf;
+    background: linear-gradient(135deg, #f7fff9 0%, #e3f8ea 100%);
+    color: #1f5b3e;
+}
+
+.popup-message.past,
+.popup-message.grey {
+    border-color: #d4dbe3;
+    background: linear-gradient(135deg, #fbfcfd 0%, #edf0f3 100%);
+    color: #52657a;
+}
+
+.popup-message::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 5px;
+    background: #2f9e75;
+}
+
+.popup-message.high::before,
+.popup-message.red::before {
+    background: #e5484d;
+}
+
+.popup-message.medium::before,
+.popup-message.orange::before {
+    background: #f2994a;
+}
+
+.popup-message.low::before,
+.popup-message.green::before {
+    background: #2f9e75;
+}
+
+.popup-message.past::before,
+.popup-message.grey::before {
+    background: #8a98a8;
+}
+
+.popup-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 9px;
+}
+
+.popup-pill {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 9px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.66);
+    color: currentColor;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    box-shadow: inset 0 0 0 1px rgba(54, 76, 99, 0.08);
+}
+
+.popup-countdown {
+    color: currentColor;
+    font-size: 0.78rem;
+    font-weight: 800;
+    white-space: nowrap;
 }
 
 .popup-content {
-    margin-right: 24px; /* Space for close button */
+    min-width: 0;
 }
 
-.customer-details p {
+.customer-details h4 {
+    margin: 0 0 7px;
+    color: #24384f;
+    font-size: 1rem;
+    font-weight: 850;
+    line-height: 1.15;
+    letter-spacing: 0;
+    overflow-wrap: anywhere;
+}
+
+.customer-details p,
+.time-info p {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
     margin: 5px 0;
-    font-size: 12px;
-    color: #333;
+    color: #3f5064;
+    font-size: 0.82rem;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.customer-details strong,
+.time-info strong {
+    flex: 0 0 auto;
+    color: #697789;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0;
 }
 
 .time-info {
-    margin-top: 5px;
-    border-top: 1px solid #eee;
-}
-
-.time-info p {
-    margin: 5px 0;
-    font-size: 12px;
-    color: #666;
+    margin-top: 9px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(54, 76, 99, 0.12);
 }
 
 .close-button {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 24px;
-    height: 24px;
+    top: 10px;
+    right: 10px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
-    border: none;
-    background: #f0f0f0;
-    color: #666;
-    font-size: 18px;
+    border: 1px solid rgba(54, 76, 99, 0.1);
+    background: rgba(255, 255, 255, 0.72);
+    color: #52657a;
+    font-size: 20px;
     line-height: 1;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
 .close-button:hover {
-    background: #e0e0e0;
-    color: #333;
+    background: #ffffff;
+    color: #24384f;
+    transform: rotate(90deg);
 }
 
 @keyframes slideIn {
@@ -120,17 +218,17 @@
 @media (max-width: 480px) {
     .popup-container {
         top: 10px;
-        right: 10px;
-        left: 10px;
-        max-width: none;
+        right: 8px;
+        left: 8px;
+        width: auto;
     }
 
     .popup-message {
-        padding: 8px;
+        padding: 12px 40px 12px 13px;
     }
 
     .customer-details p,
     .time-info p {
-        font-size: 13px;
+        font-size: 0.78rem;
     }
 }

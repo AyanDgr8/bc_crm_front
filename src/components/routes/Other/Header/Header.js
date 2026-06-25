@@ -15,6 +15,7 @@ const Header = () => {
     const [username, setUsername] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [userRole, setUserRole] = useState('');
+    const [currentDateTime, setCurrentDateTime] = useState(new Date());
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -89,6 +90,14 @@ const Header = () => {
         }
     }, [localStorage.getItem('token')]);
 
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentDateTime(new Date());
+        }, 60000);
+
+        return () => clearInterval(timer);
+    }, []);
+
     const handleSearch = () => {
         if (!searchQuery.trim()) {
             alert("Please enter a search term.");
@@ -97,7 +106,10 @@ const Header = () => {
 
         try {
             const searchTerm = encodeURIComponent(searchQuery.trim());
-            navigate(`/customers/search?query=${searchTerm}`);
+            const searchPath = userRole === 'receptionist'
+                ? `/dashboard/customers/search?query=${searchTerm}`
+                : `/customers/search?query=${searchTerm}`;
+            navigate(searchPath);
             setSearchQuery('');
         } catch (error) {
             console.error('Error in search:', error);
@@ -112,7 +124,10 @@ const Header = () => {
 
         try {
             const searchTerm = encodeURIComponent(queueSearchQuery.trim());
-            navigate(`/customers/search?team=${searchTerm}`);
+            const searchPath = userRole === 'receptionist'
+                ? `/dashboard/customers/search?team=${searchTerm}`
+                : `/customers/search?team=${searchTerm}`;
+            navigate(searchPath);
             setQueueSearchQuery('');
         } catch (error) {
             console.error('Error in queue search:', error);
@@ -144,12 +159,18 @@ const Header = () => {
     const isLoggedIn = !!localStorage.getItem("token");
 
     const handleReminderClick = () => {
-        navigate('/customers/reminders');
+        navigate(userRole === 'receptionist' ? '/dashboard/customers/reminders' : '/customers/reminders');
     };
 
     const handleLogoClick = () => {
-        navigate('/dashboard/first-reception');
+        navigate(userRole === 'receptionist' ? '/dashboard/first-reception' : '/');
     };
+
+    const receptionistMenuItems = [
+        { label: 'Companies', to: '/dashboard/first-reception' },
+        { label: 'Add New Record', to: '/dashboard/customers/create' },
+        { label: 'Reminders', to: '/dashboard/customers/reminders' }
+    ].filter(Boolean);
 
     return (
         <div className="header-container">
@@ -238,6 +259,21 @@ const Header = () => {
                                 alt="profile icon"
                                 aria-label="Profile"
                             />
+                            {userRole === 'receptionist' && (
+                                <div className="header-user-meta">
+                                    <span className="header-username">{username}</span>
+                                    <span className="header-datetime">
+                                        {currentDateTime.toLocaleString('en-US', {
+                                            weekday: 'long',
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </span>
+                                </div>
+                            )}
                             <div className="dropdown-content">
                                 {process.env.NODE_ENV === 'development' && (
                                     <div style={{padding: '1px', borderBottom: '1px solid #ccc', fontSize: '12px', color: '#666'}}>
@@ -260,6 +296,16 @@ const Header = () => {
                                     <>
                                         <Link to="/business">Business Center Management</Link>
                                         <Link to="/receptionist">Receptionist Management</Link>
+                                    </>
+                                )}
+
+                                {userRole === 'receptionist' && (
+                                    <>
+                                        {receptionistMenuItems.map((item) => (
+                                            <Link key={item.to} to={item.to}>
+                                                {item.label}
+                                            </Link>
+                                        ))}
                                     </>
                                 )}
 
@@ -291,4 +337,3 @@ const Header = () => {
 };
 
 export default Header;
-

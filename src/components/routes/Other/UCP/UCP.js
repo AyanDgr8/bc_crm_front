@@ -1,43 +1,96 @@
 // src/components/routes/Other/UCP/UCP.js
 
-import React, { useState, useRef, useEffect } from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import './UCP.css';
 
+const UCP_LOGIN_URL = 'https://ucpmed.voicemeetme.com/ucp/login';
+
 const UCP = ({ isLoggedIn = true }) => { 
-  const navigate = useNavigate();
   const [showPopup, setShowPopup] = useState(false);
   const popupContainerRef = useRef(null);
   const iframeRef = useRef(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-  const ucpUrl = 'https://ucpmed.voicemeetme.com/ucp/login';
 
-  const handleOpenPopup = () => {
+  const handleOpenPopup = useCallback(() => {
+    // Position the container at bottom left with some padding
+    const viewportHeight = window.innerHeight;
+    const containerHeight = 400; // Same as defined in CSS
+    const bottomPosition = viewportHeight - containerHeight - 80; // 80px from bottom to be above the button
+
+    setPosition({
+      x: 20, // 20px from left edge
+      y: bottomPosition
+    });
     setShowPopup(true);
-  };
+  }, []);
+
+  const postMakeCallMessage = useCallback((destination) => {
+    const iframe = iframeRef.current || document.getElementById('ucp-iframe');
+
+    if (!iframe?.contentWindow || !destination) {
+      return false;
+    }
+
+    iframe.contentWindow.postMessage({
+      type: 'MAKE_CALL',
+      payload: {
+        destination
+      }
+    }, '*');
+
+    return true;
+  }, []);
+
+  const makeCall = useCallback((destination) => {
+    if (!destination) {
+      return false;
+    }
+
+    if (!showPopup) {
+      handleOpenPopup();
+    }
+
+    window.setTimeout(() => {
+      postMakeCallMessage(destination);
+    }, 0);
+
+    return true;
+  }, [handleOpenPopup, postMakeCallMessage, showPopup]);
 
   const handleMinimize = () => {
-    setShowPopup(false);
+    setShowPopup(false); // Hide the popup when minimized
   };
 
   const handleMouseDown = (e) => {
-    if (e.target.tagName !== 'IFRAME' && e.target.tagName !== 'BUTTON') {
+    if (e.target.closest('.ucp-popup-header') && !e.target.closest('button')) {
       setIsDragging(true);
+      const rect = popupContainerRef.current.getBoundingClientRect();
       setStartPos({
-        x: e.clientX - position.x,
-        y: e.clientY - position.y
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
       });
     }
   };
 
   const handleMouseMove = (e) => {
-    if (isDragging) {
-      setPosition({
-        x: e.clientX - startPos.x,
-        y: e.clientY - startPos.y
-      });
+    if (isDragging && popupContainerRef.current) {
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const containerWidth = popupContainerRef.current.offsetWidth;
+      const containerHeight = popupContainerRef.current.offsetHeight;
+
+      let x = e.clientX - startPos.x;
+      let y = e.clientY - startPos.y;
+
+      // Ensure the container stays within viewport bounds
+      if (x < 0) x = 0;
+      if (y < 0) y = 0;
+      if (x + containerWidth > viewportWidth) x = viewportWidth - containerWidth;
+      if (y + containerHeight > viewportHeight) y = viewportHeight - containerHeight;
+
+      setPosition({ x, y });
     }
   };
 
@@ -45,60 +98,25 @@ const UCP = ({ isLoggedIn = true }) => {
     setIsDragging(false);
   };
 
-  // Handler for UCP incoming calls
-  const handleUCPMessage = (event) => {
-    // Verify origin for security
-    if (event.origin !== new URL(ucpUrl).origin) {
-      console.warn('Received message from unauthorized origin:', event.origin);
-      return;
-    }
-
-    try {
-      // Handle different message types
-      switch (event.data.type) {
-        case 'UCP_INCOMING_CALL':
-          console.info('Incoming call from ======= :', event.data.payload.queue_name);
-          // Show the UCP window if minimized
-          setShowPopup(true);
-          // Bring window to front
-          if (popupContainerRef.current) {
-            popupContainerRef.current.style.zIndex = '9999';
-          }
-          navigate(`/team/${event.data.payload.queue_name}`);
-          break;
-
-        case 'UCP_SESSION_CREATED':
-          console.info('UCP session created:', event.data.sessionId);
-          break;
-
-        case 'UCP_FULLSCREEN_CHANGE':
-          if (event.data.isFullscreen && popupContainerRef.current) {
-            popupContainerRef.current.style.width = '100%';
-            popupContainerRef.current.style.height = '100%';
-            popupContainerRef.current.style.transform = 'none';
-            setPosition({ x: 0, y: 0 });
-          }
-          break;
-
-        default:
-          console.info('Received UCP message:', event.data);
-      }
-    } catch (error) {
-      console.error('Error handling UCP message:', error);
-    }
-  };
-
   useEffect(() => {
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('message', handleUCPMessage, false);
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
-      window.removeEventListener('message', handleUCPMessage, false);
     };
   }, [isDragging, startPos]);
+
+  useEffect(() => {
+    window.makeCall = makeCall;
+
+    return () => {
+      if (window.makeCall === makeCall) {
+        delete window.makeCall;
+      }
+    };
+  }, [makeCall]);
 
   if (!isLoggedIn) {
     return null;
@@ -116,7 +134,12 @@ const UCP = ({ isLoggedIn = true }) => {
       <div 
         className={`ucp-popup-container ${!showPopup ? 'ucp-hidden' : ''}`}
         ref={popupContainerRef}
-        style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
+        style={{
+          transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
+          position: 'fixed',
+          top: 0,
+          left: 0
+        }}
         onMouseDown={handleMouseDown}
       >
         <div className="ucp-popup-header">
@@ -129,11 +152,12 @@ const UCP = ({ isLoggedIn = true }) => {
           </button>
         </div>
         <iframe 
+          id="ucp-iframe"
           ref={iframeRef}
-          src={ucpUrl}
-          title="UCP Embedded"
+          src={UCP_LOGIN_URL} 
+          title="ucp"
           className="ucp-iframe"
-          allow="microphone; camera; autoplay"
+          allow="notifications; microphone"
           style={{ display: showPopup ? 'block' : 'none' }}
         />
       </div>

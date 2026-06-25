@@ -38,7 +38,7 @@ export const PopupProvider = ({ children }) => {
 
       if (!token) return;
 
-      const response = await axios.get(`${apiUrl}/customers/reminders`, {
+      const response = await axios.get(`${apiUrl}/customers/getAllReminders`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -48,8 +48,8 @@ export const PopupProvider = ({ children }) => {
       response.data.forEach(reminder => {
         const minutesUntil = Math.floor((new Date(reminder.scheduled_at) - new Date()) / (1000 * 60));
         
-        // Only show popup for reminders within 15 minutes
-        if (minutesUntil <= 15) {
+        // Show popup only for upcoming reminders within 15 minutes.
+        if (minutesUntil >= 0 && minutesUntil <= 15) {
           let priority;
           let color;
 
@@ -67,7 +67,7 @@ export const PopupProvider = ({ children }) => {
             color,
             minutesUntil,
             onClick: () => {
-              window.location.href = `/customers/phone/${reminder.phone_no_primary}`;
+              window.location.href = `/dashboard/team/${reminder.QUEUE_NAME}/${reminder.phone_no_primary}`;
             }
           };
 

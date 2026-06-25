@@ -19,6 +19,7 @@ const CreateForm = () => {
     disposition: '',
     designation: '',
     QUEUE_NAME: location.state?.QUEUE_NAME || '',
+    enquiry_type: '',
     comment: '',
     scheduled_at: '',
   });
@@ -27,6 +28,19 @@ const CreateForm = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false); // tracks form submission state
+  const [userRole, setUserRole] = useState('');
+  const [companyOptions, setCompanyOptions] = useState([]);
+  const [isLoadingCompanies, setIsLoadingCompanies] = useState(false);
+  const [notificationOptions, setNotificationOptions] = useState({
+    sendWhatsapp: true,
+    sendEmail: true
+  });
+
+  const getMinDateTimeLocal = () => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  };
 
   useEffect(() => {
     // Get team from URL query parameter or state
@@ -39,6 +53,38 @@ const CreateForm = () => {
       }));
     }
   }, [location.search, location.state]);
+
+  useEffect(() => {
+    const fetchReceptionistCompanies = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        const tokenData = JSON.parse(atob(token.split('.')[1]));
+        setUserRole(tokenData.role || '');
+
+        if (tokenData.role !== 'receptionist' || !tokenData.business_center_id) {
+          return;
+        }
+
+        setIsLoadingCompanies(true);
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/business/${tokenData.business_center_id}/teams`,
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+
+        setCompanyOptions(Array.isArray(response.data?.teams) ? response.data.teams : []);
+      } catch (error) {
+        console.error('Error fetching receptionist companies:', error);
+      } finally {
+        setIsLoadingCompanies(false);
+      }
+    };
+
+    fetchReceptionistCompanies();
+  }, []);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -72,7 +118,7 @@ const CreateForm = () => {
   // Handle input changes
   const handleInputChange = async (e) => {
     const { name, value } = e.target;
-    // Prevent QUEUE_NAME from being changed
+    // Prevent QUEUE_NAME from being changed through normal form fields.
     if (name === 'QUEUE_NAME') return;
     
     setFormData(prev => ({
@@ -85,6 +131,84 @@ const CreateForm = () => {
     }
   };
 
+  const checkExistingCustomerForCompany = async (phone, companyName) => {
+    if (!phone || !companyName) return;
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/admin');
+        return;
+      }
+
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/customers/check/${encodeURIComponent(phone)}/${encodeURIComponent(companyName)}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.data.exists) {
+        const latestRecord = response.data.existingCustomer;
+        setError('A customer already exists with the same name and number.');
+
+        setFormData(prev => ({
+          ...prev,
+          customer_name: latestRecord?.customer_name || prev.customer_name,
+          phone_no_primary: phone,
+          phone_no_secondary: latestRecord?.phone_no_secondary || prev.phone_no_secondary,
+          email_id: latestRecord?.email_id || prev.email_id,
+          address: latestRecord?.address || prev.address,
+          country: latestRecord?.country || prev.country,
+          designation: latestRecord?.designation || prev.designation,
+          disposition: latestRecord?.disposition || prev.disposition,
+          comment: latestRecord?.comment || prev.comment,
+          C_unique_id: response.data.suggestedId
+        }));
+      } else {
+        setError('');
+        setFormData(prev => ({
+          ...prev,
+          C_unique_id: '',
+          phone_no_primary: phone
+        }));
+      }
+    } catch (err) {
+      console.error('Error checking phone number:', err);
+    }
+  };
+
+  const handleCompanySelect = (e) => {
+    const selectedCompany = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      QUEUE_NAME: selectedCompany,
+      C_unique_id: ''
+    }));
+    setError('');
+    if (formData.phone_no_primary) {
+      checkExistingCustomerForCompany(formData.phone_no_primary, selectedCompany);
+    }
+  };
+
+  const handleEnquiryTypeSelect = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      enquiry_type: e.target.value
+    }));
+    setError('');
+  };
+
+  const handleNotificationOptionChange = (e) => {
+    const { name, checked } = e.target;
+    setNotificationOptions(prev => ({
+      ...prev,
+      [name]: checked
+    }));
+  };
+
   const handlePhoneChange = async (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -93,53 +217,15 @@ const CreateForm = () => {
     }));
 
     // Check if a customer with this phone number exists
-    if (name === 'phone_no_primary' && value) {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          navigate('/admin');
-          return;
-        }
-
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/customers/check/${value}/${formData.QUEUE_NAME}`,
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          }
-        );
-
-        if (response.data.exists) {
-          const latestRecord = response.data.existingCustomer;
-          setError(response.data.message);
-          
-          // Auto-fill form with existing data
-          setFormData(prev => ({
-            ...prev,
-            customer_name: latestRecord?.customer_name || prev.customer_name,
-            phone_no_primary: value,
-            phone_no_secondary: latestRecord?.phone_no_secondary || prev.phone_no_secondary,
-            email_id: latestRecord?.email_id || prev.email_id,
-            address: latestRecord?.address || prev.address,
-            country: latestRecord?.country || prev.country,
-            designation: latestRecord?.designation || prev.designation,
-            disposition: latestRecord?.disposition || prev.disposition,
-            comment: latestRecord?.comment || prev.comment,
-            C_unique_id: response.data.suggestedId // Use the suggested new version ID
-          }));
-        } else {
-          setError('');
-          // Clear version-related fields but keep the phone number
-          setFormData(prev => ({
-            ...prev,
-            C_unique_id: '',
-            phone_no_primary: value
-          }));
-        }
-      } catch (err) {
-        console.error('Error checking phone number:', err);
-      }
+    if (name === 'phone_no_primary' && value && formData.QUEUE_NAME) {
+      checkExistingCustomerForCompany(value, formData.QUEUE_NAME);
+    } else if (name === 'phone_no_primary') {
+      setError('');
+      setFormData(prev => ({
+        ...prev,
+        C_unique_id: '',
+        phone_no_primary: value
+      }));
     }
   };
 
@@ -151,7 +237,8 @@ const CreateForm = () => {
   // Validate required fields
   const validateRequiredFields = () => {
     const requiredFields = [
-      "customer_name", "phone_no_primary", "QUEUE_NAME"
+      "customer_name", "phone_no_primary", "QUEUE_NAME",
+      ...(userRole === 'receptionist' ? ["enquiry_type"] : [])
     ];
 
     for (let field of requiredFields) {
@@ -160,6 +247,12 @@ const CreateForm = () => {
         return false;
       }
     }
+
+    if (formData.scheduled_at && new Date(formData.scheduled_at) <= new Date()) {
+      setError('Reminder time must be a future date and time.');
+      return false;
+    }
+
     return true;
   };
 
@@ -171,6 +264,11 @@ const CreateForm = () => {
     setIsSubmitting(true);
 
     try {
+      if (!validateRequiredFields()) {
+        setIsSubmitting(false);
+        return;
+      }
+
       const token = localStorage.getItem('token');
       if (!token) {
         navigate('/admin');
@@ -209,29 +307,12 @@ const CreateForm = () => {
 
       if (response.data.success) {
         try {
-          // Send email notification first
-          await axios.post(
-            `${process.env.REACT_APP_API_URL}/send-customer-email`,
-            {
-              customerId: response.data.customerId,
-              teamId: response.data.customer.team_id
-            },
-            {
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-              }
-            }
-          );
-
-          // Then try to send WhatsApp notification
-          try {
+          if (notificationOptions.sendEmail) {
             await axios.post(
-              `${process.env.REACT_APP_API_URL}/send-whatsapp`,
+              `${process.env.REACT_APP_API_URL}/send-customer-email`,
               {
                 customerId: response.data.customerId,
-                teamId: response.data.customer.team_id,
-                instanceId: localStorage.getItem('instanceId') || ''
+                teamId: response.data.customer.team_id
               },
               {
                 headers: {
@@ -240,14 +321,33 @@ const CreateForm = () => {
                 }
               }
             );
-          } catch (whatsappError) {
-            console.error('Failed to send WhatsApp notification:', whatsappError);
-            if (whatsappError.response?.data?.code === 'WHATSAPP_NOT_READY') {
-              setError('Record created successfully, but WhatsApp message could not be sent - WhatsApp is not ready');
-            } else if (whatsappError.response?.data?.error?.code === 'ECONNREFUSED') {
-              setError('Record created successfully, but WhatsApp message could not be sent - WhatsApp is disconnected');
-            } else {
-              setError('Record created successfully, but WhatsApp message could not be sent');
+          }
+
+          if (notificationOptions.sendWhatsapp) {
+            try {
+              await axios.post(
+                `${process.env.REACT_APP_API_URL}/send-whatsapp`,
+                {
+                  customerId: response.data.customerId,
+                  teamId: response.data.customer.team_id,
+                  instanceId: localStorage.getItem('instanceId') || ''
+                },
+                {
+                  headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                  }
+                }
+              );
+            } catch (whatsappError) {
+              console.error('Failed to send WhatsApp notification:', whatsappError);
+              if (whatsappError.response?.data?.code === 'WHATSAPP_NOT_READY') {
+                setError('Record created successfully, but WhatsApp message could not be sent - WhatsApp is not ready');
+              } else if (whatsappError.response?.data?.error?.code === 'ECONNREFUSED') {
+                setError('Record created successfully, but WhatsApp message could not be sent - WhatsApp is disconnected');
+              } else {
+                setError('Record created successfully, but WhatsApp message could not be sent');
+              }
             }
           }
 
@@ -282,10 +382,54 @@ const CreateForm = () => {
     return <div>Loading...</div>;
   }
 
+  const shouldChooseCompany = userRole === 'receptionist' && (!formData.QUEUE_NAME || !formData.enquiry_type);
+
   return (
     <div>
       <h2 className="create_form_headiii">New Enquiry</h2>
       <div className="create-form-container">
+        {userRole === 'receptionist' && (
+          <div className="company-choice-panel">
+            <div className="company-choice-field">
+              <label htmlFor="company-choice">Choose Company</label>
+              <select
+                id="company-choice"
+                value={formData.QUEUE_NAME}
+                onChange={handleCompanySelect}
+                disabled={isLoadingCompanies || Boolean(new URLSearchParams(location.search).get('team'))}
+              >
+                <option value="">{isLoadingCompanies ? 'Loading companies...' : 'Select company'}</option>
+                {formData.QUEUE_NAME && !companyOptions.some((company) => company.team_name === formData.QUEUE_NAME) && (
+                  <option value={formData.QUEUE_NAME}>{formData.QUEUE_NAME.replace(/_/g, ' ')}</option>
+                )}
+                {companyOptions.map((company) => (
+                  <option key={company.id || company.team_name} value={company.team_name}>
+                    {(company.team_name || '').replace(/_/g, ' ')}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="company-choice-field">
+              <label htmlFor="enquiry-type">Type</label>
+              <select
+                id="enquiry-type"
+                value={formData.enquiry_type}
+                onChange={handleEnquiryTypeSelect}
+              >
+                <option value="">Select type</option>
+                <option value="call">Call</option>
+                <option value="walk_in">Walk In</option>
+              </select>
+            </div>
+          </div>
+        )}
+        {userRole !== 'receptionist' && formData.QUEUE_NAME && (
+          <div className="selected-company-strip">
+            <span>Company</span>
+            <strong>{formData.QUEUE_NAME.replace(/_/g, ' ')}</strong>
+          </div>
+        )}
+        {!shouldChooseCompany && (
         <form onSubmit={handleSubmit} className="create-form">
           <div className="form-section">
             <div className="form-section-title">Basic Information</div>
@@ -410,6 +554,7 @@ const CreateForm = () => {
                   name="scheduled_at"
                   value={formData.scheduled_at}
                   onChange={handleInputChange}
+                  min={getMinDateTimeLocal()}
                 />
               </div>
             </div>
@@ -431,6 +576,27 @@ const CreateForm = () => {
             <div className="successs-message">Record created successfully!</div>
           )}
 
+          <div className="notification-checkboxes">
+            <label>
+              <input
+                type="checkbox"
+                name="sendWhatsapp"
+                checked={notificationOptions.sendWhatsapp}
+                onChange={handleNotificationOptionChange}
+              />
+              <span>Send WhatsApp</span>
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                name="sendEmail"
+                checked={notificationOptions.sendEmail}
+                onChange={handleNotificationOptionChange}
+              />
+              <span>Send Email</span>
+            </label>
+          </div>
+
           <div className="buttonn-container">
             <button type="submit" className="submit-buttonn" disabled={isSubmitting}>
               {isSubmitting && <i className="fas fa-sync fa-spin" style={{ marginRight: '6px' }}></i>}
@@ -438,6 +604,7 @@ const CreateForm = () => {
             </button>
           </div>
         </form>
+        )}
       </div>
       
     </div>

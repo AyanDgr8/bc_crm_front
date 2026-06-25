@@ -18,8 +18,6 @@ const Dashboard = () => {
     const location = useLocation();
     const [userRole, setUserRole] = useState('');
     const [businessId, setBusinessId] = useState('');
-    const [username, setUsername] = useState('');
-    const [currentDateTime, setCurrentDateTime] = useState(new Date());
     const [teams, setTeams] = useState([]);
     const [showTeams, setShowTeams] = useState(false);
     const [isLoadingTeams, setIsLoadingTeams] = useState(false);
@@ -162,17 +160,7 @@ const Dashboard = () => {
                 console.warn('No business_center_id in token');
             }
             setBusinessId(tokenData.business_center_id || '');
-            setUsername(tokenData.username || '');
         }
-
-        // Update date/time every minute
-        const timer = setInterval(() => {
-            setCurrentDateTime(new Date());
-        }, 60000);
-
-        return () => {
-            clearInterval(timer);
-        };
     }, []);
 
     useEffect(() => {
@@ -217,26 +205,8 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard-container">
-            <div className="dashboard-header">
-                <div className="header-info">
-                </div>
-                <div className="header-rightt">
-                    <div className="user-infoo">
-                        <div className="usernameee">{username}</div>
-                        <div className="datetimer">
-                            {currentDateTime.toLocaleString('en-US', {
-                                weekday: 'long',
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            })}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="dashboard-content">
+            <div className={`dashboard-content ${userRole === 'receptionist' ? 'dashboard-content--full' : ''}`}>
+                {userRole !== 'receptionist' && (
                 <div className="sidebar">
                     <div className="sidebar-actions">
                         {userRole === 'receptionist' && (
@@ -302,6 +272,7 @@ const Dashboard = () => {
                         </div>
                     </div>
                 </div>
+                )}
                 <div className="main-contenttt">
                     <Routes>
                         <Route path="first-reception" element={<FirstReception />} />
@@ -312,6 +283,8 @@ const Dashboard = () => {
                         <Route path="customers/create" element={<CreateForm />} />
                         <Route path="customers/reminders" element={<Reminder />} />
                         <Route path="customers/search" element={<SearchForm />} />
+                        <Route path="team/:teamName/:phone_no_primary" element={<UseForm />} />
+                        <Route path="customer/:id" element={<UseForm />} />
                     </Routes>
                 </div>
             </div>
