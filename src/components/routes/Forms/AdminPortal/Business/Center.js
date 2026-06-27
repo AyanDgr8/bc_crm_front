@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { buildAgentStatusByExtension } from '../../../../../utils/agentAvailability';
+import { dialCustomerPhone } from '../../../../../utils/ucpDialer';
 import './Center.css';
 
 const Center = () => {
@@ -24,6 +26,7 @@ const Center = () => {
     const [associates, setAssociates] = useState([]);
     const [newTeams, setNewTeams] = useState([{
         team_name: '',
+        team_extension: '',
         tax_id: '',
         reg_no: '',
         team_phone: '',
@@ -55,6 +58,7 @@ const Center = () => {
     });
     const [editingTeam, setEditingTeam] = useState(null);
     const [role, setRole] = useState(null);
+    const [agentStatusByExtension, setAgentStatusByExtension] = useState({});
 
     const fetchBusiness = async () => {
         try {
@@ -168,6 +172,26 @@ const Center = () => {
         }
     };
 
+    const fetchAgentStatuses = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get(
+                `${process.env.REACT_APP_API_URL}/agent-stats/final`,
+                {
+                    params: {
+                        businessCenterId: businessId,
+                        limit: 300
+                    },
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
+
+            setAgentStatusByExtension(buildAgentStatusByExtension(response.data));
+        } catch (error) {
+            console.error('Error fetching agent statuses:', error);
+        }
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             if (!businessId) {
@@ -181,6 +205,7 @@ const Center = () => {
                 await fetchBrandCounts();
                 await fetchTeams();
                 await fetchAssociates();
+                await fetchAgentStatuses();
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -196,6 +221,34 @@ const Center = () => {
             setRole(tokenData.role);
         }
     }, []);
+
+    const getTeamAssociates = (team) => {
+        if (!team) return [];
+
+        if (Array.isArray(team.associates)) {
+            return team.associates.filter((associate) => associate && associate.id);
+        }
+
+        if (typeof team.associates === 'string') {
+            try {
+                const parsedAssociates = JSON.parse(team.associates);
+                return Array.isArray(parsedAssociates)
+                    ? parsedAssociates.filter((associate) => associate && associate.id)
+                    : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        return associates.filter((associate) => String(associate.team_id) === String(team.id));
+    };
+
+    const getAgentStatus = (associate) => {
+        const extension = String(associate.extension || '').trim();
+        return agentStatusByExtension[extension] || '';
+    };
+
+    const canCallAssociate = (associate) => Boolean(associate.extension) && getAgentStatus(associate) === 'available';
 
     const handleUserInputChange = (field, value) => {
         setNewUser(prev => ({
@@ -295,9 +348,9 @@ const Center = () => {
             }
 
             // Check if any required fields are empty
-            const hasEmptyFields = newTeams.some(team => !team.team_name || !team.tax_id || !team.reg_no);
+            const hasEmptyFields = newTeams.some(team => !team.team_name || !team.team_extension || !team.tax_id || !team.reg_no);
             if (hasEmptyFields) {
-                setError('Please fill in all required fields for teams');
+                setError('Please fill in company name, team extension, tax ID, and registration number');
                 setMessageVisible(true);
                 setTimeout(() => setMessageVisible(false), 3000);
                 return;
@@ -316,6 +369,7 @@ const Center = () => {
                 setShowTeamForm(false);
                 setNewTeams([{
                     team_name: '',
+                    team_extension: '',
                     tax_id: '',
                     reg_no: '',
                     team_phone: '',
@@ -465,6 +519,7 @@ const Center = () => {
         setEditingTeam(team);
         setNewTeams([{
             team_name: team.team_name,
+            team_extension: team.team_extension || '',
             tax_id: team.tax_id,
             reg_no: team.reg_no,
             team_phone: team.team_phone,
@@ -497,6 +552,14 @@ const Center = () => {
 
             // Format the data according to the backend's expectation
             const data = editingTeam ? newTeams[0] : { teams: newTeams };
+            const requiredTeams = editingTeam ? [newTeams[0]] : newTeams;
+            const hasEmptyFields = requiredTeams.some(team => !team.team_name || !team.team_extension || !team.tax_id || !team.reg_no);
+            if (hasEmptyFields) {
+                setError('Please fill in company name, team extension, tax ID, and registration number');
+                setMessageVisible(true);
+                setTimeout(() => setMessageVisible(false), 3000);
+                return;
+            }
 
             await axios[method](url, data, {
                 headers: {
@@ -528,6 +591,7 @@ const Center = () => {
     const resetTeamForm = () => {
         setNewTeams([{
             team_name: '',
+            team_extension: '',
             tax_id: '',
             reg_no: '',
             team_phone: '',
@@ -584,6 +648,21 @@ const Center = () => {
                                                 value={team.team_name}
                                                 onChange={(e) => handleTeamInputChange(index, 'team_name', e.target.value)}
                                                 placeholder="Company Name"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="form-groupppp">
+                                        <label htmlFor={`team_extension_${index}`}>Team Extension:</label>
+                                        <div className="input-container">
+                                            <input
+                                                type="text"
+                                                id={`team_extension_${index}`}
+                                                value={team.team_extension}
+                                                onChange={(e) => handleTeamInputChange(index, 'team_extension', e.target.value)}
+                                                placeholder="Team Extension"
+                                                inputMode="numeric"
+                                                required
                                             />
                                         </div>
                                     </div>
@@ -596,6 +675,7 @@ const Center = () => {
                                                 value={team.tax_id}
                                                 onChange={(e) => handleTeamInputChange(index, 'tax_id', e.target.value)}
                                                 placeholder="Tax ID"
+                                                required
                                             />
                                         </div>
                                     </div>
@@ -608,6 +688,7 @@ const Center = () => {
                                                 value={team.reg_no}
                                                 onChange={(e) => handleTeamInputChange(index, 'reg_no', e.target.value)}
                                                 placeholder="Registration Number"
+                                                required
                                             />
                                         </div>
                                     </div>
@@ -710,7 +791,10 @@ const Center = () => {
             <div className="teams-list-section">
                 <h3>Companies</h3>
                 <div className="teams-gridd">
-                    {teams.map((team, index) => (
+                    {teams.map((team, index) => {
+                        const teamAssociates = getTeamAssociates(team);
+
+                        return (
                         <div 
                             key={team.id} 
                             className="team-cardd"
@@ -722,11 +806,70 @@ const Center = () => {
                             }}
                             style={{ cursor: 'pointer' }}
                         >
-                            <h4>{team.team_name.replace(/_/g, ' ')}</h4>
-                            <div className="team-detailss">
-                                <p><strong>Email:</strong> {team.team_email}</p>
-                                <p><strong>Phone:</strong> {team.team_phone}</p>
-                                <p><strong>Country:</strong> {team.team_country}</p>
+                            <div className="team-card-header">
+                                <div className="team-card-title-row">
+                                    <div className="team-card-title-text">
+                                        <h4>{team.team_name.replace(/_/g, ' ')}</h4>
+                                        {team.team_extension && (
+                                            <span className="team-card-extension">
+                                                Team Ext: {team.team_extension}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="team-extension-call-button"
+                                        aria-label={`Call ${team.team_name.replace(/_/g, ' ')} team extension`}
+                                        title={team.team_extension ? `Call team extension ${team.team_extension}` : 'No team extension available'}
+                                        disabled={!team.team_extension}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (team.team_extension) {
+                                                window.openUcpPopup?.();
+                                                dialCustomerPhone(team.team_extension);
+                                            }
+                                        }}
+                                    >
+                                        <i className="fas fa-phone"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="team-associates-list">
+                                {teamAssociates.length > 0 ? (
+                                    teamAssociates.map((associate) => {
+                                        const canCall = canCallAssociate(associate);
+
+                                        return (
+                                        <div className="team-associate-row" key={associate.id}>
+                                            <div className="team-associate-info">
+                                                <span className="team-associate-name">{associate.username}</span>
+                                                <span className="team-associate-extension">
+                                                    Ext: {associate.extension || 'N/A'}
+                                                </span>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                className="associate-call-button"
+                                                aria-label={`Call ${associate.username}`}
+                                                title={canCall ? `Call ${associate.username}` : `${associate.username} is unavailable`}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (canCall) {
+                                                        dialCustomerPhone(associate.extension);
+                                                    }
+                                                }}
+                                                disabled={!canCall}
+                                            >
+                                                <i className="fas fa-phone"></i>
+                                            </button>
+                                        </div>
+                                        );
+                                    })
+                                ) : (
+                                    <div className="team-associates-empty">
+                                        No associates added
+                                    </div>
+                                )}
                             </div>
                             <div className="team-actions">
                                 {role !== 'receptionist' && (
@@ -753,7 +896,8 @@ const Center = () => {
                                 )}
                             </div>
                         </div>
-                    ))}
+                        );
+                    })}
                 </div>
                 <div className="teams-pagination">
                     <span>Total Company: {teams.length}</span>

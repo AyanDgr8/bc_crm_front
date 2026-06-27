@@ -281,10 +281,11 @@
 
 .dropdown-content a {
     color: #333;
-    padding: 10px;
+    padding: 10px 12px;
     text-decoration: none;
     display: flex;
     align-items: center;
+    gap: 10px;
     font-size: 0.95rem;
     transition: all 0.2s ease;
     position: relative;
@@ -293,7 +294,30 @@
 .dropdown-content a:hover {
     background-color: #f8f9fa;
     color: #EF6F53;
-    padding-left: 24px;
+    padding-left: 18px;
+}
+
+.dropdown-menu-link span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.dropdown-menu-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 18px;
+    width: 18px;
+    color: #24516f;
+    font-size: 0.86rem;
+    text-align: center;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.dropdown-content a:hover .dropdown-menu-icon,
+.dropdown-footer:hover .dropdown-menu-icon {
+    color: #EF6F53;
+    transform: translateX(1px);
 }
 
 .dropdown-content a::before {
@@ -312,11 +336,14 @@
 
 .dropdown-footer {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
     background-color: #f8f9fa;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
+    cursor: pointer;
 }
 
 .username-logout{
@@ -325,12 +352,15 @@
     cursor: pointer;
 }
 .dropdown-footer .logout-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
     color: #EF6F53;
     cursor: pointer;
     font-size: 0.9rem;
     font-weight: 500;
     transition: color 0.2s;
-    padding: 5px;
+    padding: 0;
 }
 
 .dropdown-footer .logout-btn:hover {
@@ -382,6 +412,14 @@
     .form-control,
     .form-control:focus {
         width: 100%;
+    }
+
+    .header-user-meta {
+        max-width: 150px;
+    }
+
+    .header-user-meta .header-datetime {
+        display: none;
     }
 
 }

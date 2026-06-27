@@ -85,20 +85,20 @@ const SearchForm = () => {
   };
 
 
-  const handleHomeClick = () => {
-    // Get current businessId from state or URL
-    const currentBusinessId = businessId || (() => {
-      const pathParts = location.pathname.split('/');
-      const businessIndex = pathParts.indexOf('business');
-      return businessIndex !== -1 ? pathParts[businessIndex + 1] : '2';
-    })();
+  // const handleHomeClick = () => {
+  //   // Get current businessId from state or URL
+  //   const currentBusinessId = businessId || (() => {
+  //     const pathParts = location.pathname.split('/');
+  //     const businessIndex = pathParts.indexOf('business');
+  //     return businessIndex !== -1 ? pathParts[businessIndex + 1] : '2';
+  //   })();
 
-    // Navigate to business center view
-    const path = userRole === 'receptionist'
-      ? `/dashboard/business/${currentBusinessId}/team/${teamName}`
-      : `/business/${currentBusinessId}/team/${teamName}`;
-    navigate(path);
-  };
+  //   // Navigate to business center view
+  //   const path = userRole === 'receptionist'
+  //     ? `/dashboard/business/${currentBusinessId}/team/${teamName}`
+  //     : `/business/${currentBusinessId}/team/${teamName}`;
+  //   navigate(path);
+  // };
 
   useEffect(() => {
     fetchData();
@@ -145,7 +145,7 @@ const SearchForm = () => {
   return (
     <div className="list-container">
       <div className="header-containerrr">
-          <div className="header-left">
+          {/* <div className="header-left">
             <img 
               src="/uploads/house-fill.svg"
               className="home-icon"
@@ -153,7 +153,7 @@ const SearchForm = () => {
               aria-label="Home"
               onClick={handleHomeClick}
             />
-          </div>
+          </div> */}
           <div className="header-center">
             <h2 className="list_form_headi">
               {teamName ? `Search results for ${teamName.replace(/_/g, ' ')}` : 'Search results'}

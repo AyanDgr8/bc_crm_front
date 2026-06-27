@@ -5,8 +5,20 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Business.css';
 
+const lookbackOptions = [
+    { label: '10 mins', value: 600 },
+    { label: '15 mins', value: 900 },
+    { label: '20 mins', value: 1200 },
+    { label: 'Half hour', value: 1800 },
+    { label: '45 minutes', value: 2700 },
+    { label: '1 hour', value: 3600 },
+    { label: '2 hours', value: 7200 },
+    { label: '3 hours', value: 10800 }
+];
+
 const Business = () => {
     const [businesses, setBusinesses] = useState([]);
+    const [receptionists, setReceptionists] = useState([]);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [isLoading, setIsLoading] = useState(true);
@@ -15,6 +27,15 @@ const Business = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [brandLimits, setBrandLimits] = useState(null);
     const [isBusinessAdmin, setIsBusinessAdmin] = useState(false);
+    const [agentStatsConfigs, setAgentStatsConfigs] = useState([]);
+    const [configBusiness, setConfigBusiness] = useState(null);
+    const [agentStatsConfigForm, setAgentStatsConfigForm] = useState({
+        tenant_name: '',
+        base_url: '',
+        x_account_id: '',
+        lookback_seconds: 3600,
+        is_active: true
+    });
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -74,6 +95,36 @@ const Business = () => {
         }
     };
 
+    const fetchReceptionists = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/receptionist`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            setReceptionists(Array.isArray(response.data) ? response.data : []);
+        } catch (error) {
+            console.error('Error fetching receptionists:', error);
+            setReceptionists([]);
+        }
+    };
+
+    const fetchAgentStatsConfigs = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/agent-stats/configs`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setAgentStatsConfigs(Array.isArray(response.data) ? response.data : []);
+        } catch (error) {
+            console.error('Error fetching agent stats configs:', error);
+        }
+    };
+
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -94,7 +145,9 @@ const Business = () => {
         }
 
         fetchBusinesses();
+        fetchReceptionists();
         fetchBrandLimits();
+        fetchAgentStatsConfigs();
     }, [navigate]);
 
     const handleInputChange = (e) => {
@@ -205,6 +258,7 @@ const Business = () => {
             setSuccess(editingBusiness ? 'Business updated successfully!' : 'Business created successfully!');
             resetForm();
             fetchBusinesses();
+            fetchReceptionists();
             setTimeout(() => setSuccess(''), 3000);
         } catch (error) {
             console.error('Error:', error);
@@ -275,6 +329,7 @@ const Business = () => {
                 setSuccess('Business center deleted successfully');
                 setTimeout(() => setSuccess(''), 3000);
                 fetchBusinesses();
+                fetchReceptionists();
             } catch (error) {
                 setError(error.response?.data?.message || 'Error deleting business center');
                 setTimeout(() => setError(''), 3000);
@@ -320,29 +375,116 @@ const Business = () => {
         setShowForm(true);
     };
 
+    const openAgentStatsConfig = (business) => {
+        const existingConfig = agentStatsConfigs.find((config) => (
+            String(config.business_center_id) === String(business.id)
+        ));
+        const existingLookback = Number(existingConfig?.lookback_seconds) || 3600;
+        const lookbackSeconds = lookbackOptions.some((option) => option.value === existingLookback)
+            ? existingLookback
+            : 3600;
+
+        setConfigBusiness(business);
+        setAgentStatsConfigForm({
+            tenant_name: existingConfig?.tenant_name || '',
+            base_url: existingConfig?.base_url || '',
+            x_account_id: existingConfig?.x_account_id || '',
+            lookback_seconds: lookbackSeconds,
+            is_active: existingConfig ? Boolean(existingConfig.is_active) : true
+        });
+    };
+
+    const handleAgentStatsConfigChange = (field, value) => {
+        setAgentStatsConfigForm((current) => ({
+            ...current,
+            [field]: value
+        }));
+    };
+
+    const clearAgentStatsConfigValues = () => {
+        setAgentStatsConfigForm((current) => ({
+            ...current,
+            tenant_name: '',
+            base_url: '',
+            x_account_id: '',
+            is_active: false
+        }));
+    };
+
+    const handleAgentStatsConfigSubmit = async (event) => {
+        event.preventDefault();
+        if (!configBusiness) return;
+
+        const apiDetailValues = [
+            agentStatsConfigForm.tenant_name.trim(),
+            agentStatsConfigForm.base_url.trim(),
+            agentStatsConfigForm.x_account_id.trim()
+        ];
+        const hasAnyApiDetail = apiDetailValues.some(Boolean);
+        const hasAllApiDetails = apiDetailValues.every(Boolean);
+
+        if (hasAnyApiDetail && !hasAllApiDetails) {
+            setError('Please fill Tenant, Base API URL and Report X-Account-Id, or clear all three values.');
+            setTimeout(() => setError(''), 4000);
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            await axios.post(
+                `${process.env.REACT_APP_API_URL}/agent-stats/configs`,
+                {
+                    ...agentStatsConfigForm,
+                    business_center_id: configBusiness.id
+                },
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
+            setSuccess(hasAnyApiDetail ? 'Agent stats API config saved' : 'Agent stats API config cleared');
+            setConfigBusiness(null);
+            fetchAgentStatsConfigs();
+            setTimeout(() => setSuccess(''), 3000);
+        } catch (error) {
+            setError(error.response?.data?.message || 'Error saving agent stats config');
+            setTimeout(() => setError(''), 4000);
+        }
+    };
+
     if (isLoading) {
         return <div>Loading...</div>;
     }
 
+    const getReceptionistsForBusiness = (businessId) => {
+        return receptionists.filter((receptionist) => (
+            String(receptionist.business_center_id) === String(businessId)
+        ));
+    };
+
     return (
         <div className="business-container">
-            <h2>Business Centers</h2>
+            <div className="business-page-header">
+                <div>
+                    <span className="business-eyebrow">Management</span>
+                    <h2>Business Centers</h2>
+                    <p>{businesses.length} center{businesses.length === 1 ? '' : 's'} available</p>
+                </div>
+                {!showForm && localStorage.getItem('token') && 
+                 JSON.parse(atob(localStorage.getItem('token').split('.')[1])).role !== 'business_admin' && (
+                    <button 
+                        className="add-business-btn"
+                        onClick={handleAddBusinessClick}
+                    >
+                        Add New Business Center
+                    </button>
+                )}
+            </div>
             {error && <div className="error-message">{error}</div>}
             {success && <div className="success-message">{success}</div>}
             {isLoading && <div className="loading-message">Loading...</div>}
 
             {!isLoading && (
                 <>
-                    {/* Only show Add Business button if not business_admin */}
-                    {!showForm && localStorage.getItem('token') && 
-                     JSON.parse(atob(localStorage.getItem('token').split('.')[1])).role !== 'business_admin' && (
-                        <button 
-                            className="add-business-btn"
-                            onClick={handleAddBusinessClick}
-                        >
-                            {showForm ? 'Cancel' : 'Add New Business Center'}
-                        </button>
-                    )}
                     {showForm && (
                         <form onSubmit={handleSubmit} className="business-form">
                             <div className="form-sections">
@@ -549,6 +691,78 @@ const Business = () => {
                         </form>
                     )}
 
+                    {configBusiness && (
+                        <form className="agent-stats-config-form" onSubmit={handleAgentStatsConfigSubmit}>
+                            <div className="agent-stats-config-heading">
+                                <h3>Agent Stats API Config - {configBusiness.business_name}</h3>
+                                <button type="button" onClick={clearAgentStatsConfigValues}>
+                                    Clear Values
+                                </button>
+                            </div>
+                            <div className="agent-stats-config-grid">
+                                <label>
+                                    Tenant
+                                    <input
+                                        value={agentStatsConfigForm.tenant_name}
+                                        onChange={(event) => handleAgentStatsConfigChange('tenant_name', event.target.value)}
+                                        placeholder="obc1"
+                                    />
+                                </label>
+                                <label>
+                                    Base API URL
+                                    <input
+                                        value={agentStatsConfigForm.base_url}
+                                        onChange={(event) => handleAgentStatsConfigChange('base_url', event.target.value)}
+                                        placeholder="https://ucpmed.voicemeetme.com:9443"
+                                    />
+                                </label>
+                                <label>
+                                    Report X-Account-Id
+                                    <input
+                                        value={agentStatsConfigForm.x_account_id}
+                                        onChange={(event) => handleAgentStatsConfigChange('x_account_id', event.target.value)}
+                                    />
+                                </label>
+                                <div className="agent-stats-timing-section">
+                                    <label>
+                                        Lookback Time
+                                        <span className="agent-stats-field-note">
+                                            How far back each poll fetches data.
+                                        </span>
+                                        <select
+                                            value={agentStatsConfigForm.lookback_seconds}
+                                            onChange={(event) => handleAgentStatsConfigChange('lookback_seconds', event.target.value)}
+                                        >
+                                            {lookbackOptions.map((option) => (
+                                                <option key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </label>
+                                </div>
+                                <label className="agent-stats-config-toggle">
+                                    <input
+                                        type="checkbox"
+                                        checked={agentStatsConfigForm.is_active}
+                                        onChange={(event) => handleAgentStatsConfigChange('is_active', event.target.checked)}
+                                    />
+                                    Active polling
+                                    <span
+                                        className="agent-stats-help"
+                                        title="When active, the system automatically fetches this tenant's agent stats every poll interval and stores the raw and final reports."
+                                    >
+                                        ?
+                                    </span>
+                                </label>
+                            </div>
+                            <div className="agent-stats-config-actions">
+                                <button type="submit">Save Config</button>
+                                <button type="button" onClick={() => setConfigBusiness(null)}>Cancel</button>
+                            </div>
+                        </form>
+                    )}
+
                     <div className="businesses-list">
                         <h3 className="business-list-title">Business List</h3>
                         {businesses.length === 0 && !error && !isLoading && (
@@ -558,6 +772,16 @@ const Business = () => {
                         )}
                         <div className="business-cards-container">
                             {businesses.map(business => (
+                                (() => {
+                                    const businessReceptionists = getReceptionistsForBusiness(business.id);
+                                    const receptionistNames = businessReceptionists
+                                        .map((receptionist) => receptionist.receptionist_name)
+                                        .filter(Boolean);
+                                    const hasAgentStatsConfig = agentStatsConfigs.some((config) => (
+                                        String(config.business_center_id) === String(business.id)
+                                    ));
+
+                                    return (
                                 <div 
                                     key={business.id} 
                                     className="business-card"
@@ -570,6 +794,17 @@ const Business = () => {
                                         <p><strong>Phone:</strong> {business.business_phone}</p>
                                         <p><strong>Email:</strong> {business.business_email}</p>
                                         <p><strong>Country:</strong> {business.business_country}</p>
+                                        <div className="business-receptionists-summary">
+                                            <div>
+                                                <strong>Receptionists</strong>
+                                                <span>{businessReceptionists.length}</span>
+                                            </div>
+                                            <p>
+                                                {receptionistNames.length > 0
+                                                    ? receptionistNames.join(', ')
+                                                    : 'No receptionists added yet'}
+                                            </p>
+                                        </div>
                                     </div>
                                     <div className="business-actions" onClick={e => e.stopPropagation()}>
                                         {!isBusinessAdmin && (
@@ -582,10 +817,18 @@ const Business = () => {
                                             className="receptionist-button"
                                             onClick={() => navigate(`/business/receptionist`)}
                                         >
-                                            RECEPTIONIST
+                                            ADD RECEPTIONIST
+                                        </button>
+                                        <button
+                                            className="agent-config-button"
+                                            onClick={() => openAgentStatsConfig(business)}
+                                        >
+                                            {hasAgentStatsConfig ? 'EDIT API CONFIG' : 'ADD API CONFIG'}
                                         </button>
                                     </div>
                                 </div>
+                                    );
+                                })()
                             ))}
                         </div>
                     </div>

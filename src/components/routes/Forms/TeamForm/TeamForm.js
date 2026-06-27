@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import { useParams, useNavigate } from 'react-router-dom';
+import { buildAgentStatusByExtension } from '../../../../utils/agentAvailability';
+import { dialCustomerPhone } from '../../../../utils/ucpDialer';
 import './TeamForm.css';
 
 const TeamForm = () => {
@@ -15,6 +17,7 @@ const TeamForm = () => {
     const [editingMember, setEditingMember] = useState(null);
     const [role, setRole] = useState(null);
     const [activeTab, setActiveTab] = useState('about');
+    const [agentStatusByExtension, setAgentStatusByExtension] = useState({});
     const [memberFormData, setMemberFormData] = useState({
         username: '',
         designation: '',
@@ -119,6 +122,23 @@ const TeamForm = () => {
                 if (membersData && Array.isArray(membersData)) {
                     setTeamMembers(membersData);
                 }
+
+                try {
+                    const agentStatsResponse = await axios.get(
+                        `${apiUrl}/agent-stats/final`,
+                        {
+                            params: {
+                                businessCenterId: team.business_id,
+                                limit: 300
+                            },
+                            headers: { Authorization: `Bearer ${token}` }
+                        }
+                    );
+                    setAgentStatusByExtension(buildAgentStatusByExtension(agentStatsResponse.data));
+                } catch (statsError) {
+                    console.error('Error fetching agent statuses:', statsError);
+                    setAgentStatusByExtension({});
+                }
                 
                 setIsLoading(false);
             } catch (err) {
@@ -138,7 +158,10 @@ const TeamForm = () => {
 
     const handleViewRecords = () => {
         if (teamDetails) {
-            navigate(`/dashboard/customers/search?team=${teamDetails.team_name.replace(/\s+/g, '_')}`);
+            const path = role === 'receptionist'
+                ? `/dashboard/customers/search?team=${teamDetails.team_name.replace(/\s+/g, '_')}`
+                : `/customers/search?team=${teamDetails.team_name.replace(/\s+/g, '_')}`;
+            navigate(path);
         }
     };
 
@@ -148,20 +171,14 @@ const TeamForm = () => {
           : `/customers/create?team=${teamDetails.team_name.replace(/\s+/g, '_')}`;
         navigate(path);
     };
-    
-    const handleMemberEdit = (member) => {
-        setEditingMember(member);
-        setMemberFormData({
-            username: member.username,
-            designation: member.designation,
-            department: member.department,
-            email: member.email,
-            extension: member.extension,
-            mobile_num: member.mobile_num,
-            mobile_num_2: member.mobile_num_2 || ''
-        });
+
+    const getAgentStatus = (member) => {
+        const extension = String(member.extension || '').trim();
+        return agentStatusByExtension[extension] || '';
     };
 
+    const canCallMember = (member) => Boolean(member.extension) && getAgentStatus(member) === 'available';
+    
     const handleMemberUpdate = async (e) => {
         e.preventDefault();
         setError('');
@@ -217,45 +234,6 @@ const TeamForm = () => {
         }
     };
 
-    const handleMemberDelete = async (memberId) => {
-        if (!window.confirm('Are you sure you want to delete this team member?')) {
-            return;
-        }
-
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                navigate('/login');
-                return;
-            }
-
-            await axios.delete(`${apiUrl}/team/member/${memberId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            // Update the team members list by removing the deleted member
-            setTeamMembers(prevMembers => 
-                prevMembers.filter(member => member.id !== memberId)
-            );
-
-            setSuccess('Team member deleted successfully');
-
-            // Clear success message after 3 seconds
-            setTimeout(() => {
-                setSuccess('');
-            }, 3000);
-
-        } catch (error) {
-            console.error('Error deleting team member:', error);
-            setError(error.response?.data?.message || 'Error deleting team member');
-            
-            // Clear error message after 3 seconds
-            setTimeout(() => {
-                setError('');
-            }, 3000);
-        }
-    };
-
     const resetMemberForm = () => {
         setEditingMember(null);
         setMemberFormData({
@@ -294,12 +272,29 @@ const TeamForm = () => {
         <div className="team-form-container">
             <div className="team-titlee team-hero">
                 <div className="team-hero-row">
-                    <h1 className="team-name">{displayTeamName}</h1>
-                    <button className="view-records-btn" onClick={handleViewRecords}>
-                        View Records
-                    </button>
-                    <button className="add-record-btn hero-add-record" onClick={handleAddRecord}>
-                        Add New Record
+                    <div className="team-title-text">
+                        <h1 className="team-name">{displayTeamName}</h1>
+                        {teamDetails.team_extension && (
+                            <span className="team-extension-label">
+                                Team Ext: {teamDetails.team_extension}
+                            </span>
+                        )}
+                    </div>
+                    <button
+                        type="button"
+                        className="team-extension-call-button"
+                        aria-label={`Call ${displayTeamName} team extension`}
+                        title={teamDetails.team_extension ? `Call team extension ${teamDetails.team_extension}` : 'No team extension available'}
+                        disabled={!teamDetails.team_extension}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (teamDetails.team_extension) {
+                                window.openUcpPopup?.();
+                                dialCustomerPhone(teamDetails.team_extension);
+                            }
+                        }}
+                    >
+                        <i className="fas fa-phone"></i>
                     </button>
                 </div>   
             </div>
@@ -326,7 +321,7 @@ const TeamForm = () => {
                     className={activeTab === 'associates' ? 'active' : ''}
                     onClick={() => setActiveTab('associates')}
                 >
-                    Associates
+                    Associates ({teamMembers.length})
                 </button>
             </div>
 
@@ -340,13 +335,6 @@ const TeamForm = () => {
 
                 {activeTab === 'associates' && (
             <div className="team-memberss">
-                <div className="team-members-header">
-                    <div>
-                        <span className="team-eyebrow">Associates</span>
-                        <h2>Company Members ({teamMembers.length})</h2>
-                    </div>
-                </div>
-
                 {/* Success and Error Messages */}
                 {success && <div className="success-message">{success}</div>}
                 {error && <div className="error-message">{error}</div>}
@@ -482,26 +470,43 @@ const TeamForm = () => {
                         </div>
                     )}
                     {teamMembers.map((member) => {
+                        const canCall = canCallMember(member);
+
                         return (
                         <div key={member.id} className="member-card">
                             <div className="member-card-header">
-                                <div>
+                                <div className="member-identity">
                                     <h3>{member.username}</h3>
-                                    <span>{member.designation || 'Associate'}</span>
                                 </div>
+                                <button
+                                    type="button"
+                                    className="member-call-button"
+                                    aria-label={`Call ${member.username}`}
+                                    title={canCall ? `Call ${member.username}` : `${member.username} is unavailable`}
+                                    disabled={!canCall}
+                                    onClick={() => {
+                                        if (canCall) {
+                                            dialCustomerPhone(member.extension);
+                                        }
+                                    }}
+                                >
+                                    <i className="fas fa-phone"></i>
+                                </button>
                             </div>
                             <div className="member-details">
-                                <p><strong>Department:</strong> {member.department}</p>
-                                <p><strong>Extension:</strong> {member.extension || 'N/A'}</p>
-                                <p><strong>Email:</strong> {member.email}</p>
-                                <p><strong>Phone:</strong> <a href={`tel:${member.mobile_num}`}>{member.mobile_num}</a></p>
+                                <p>
+                                    <strong>Extension</strong>
+                                    <span className="member-detail-value member-extension-value">{member.extension || 'N/A'}</span>
+                                </p>
+                                <p>
+                                    <strong>Email</strong>
+                                    {member.email ? (
+                                        <a className="member-detail-value" href={`mailto:${member.email}`}>{member.email}</a>
+                                    ) : (
+                                        <span className="member-detail-value">N/A</span>
+                                    )}
+                                </p>
                             </div>
-                            {role !== 'receptionist' && (
-                                <div className="member-actions">
-                                    <button onClick={() => handleMemberEdit(member)}>Edit</button>
-                                    <button onClick={() => handleMemberDelete(member.id)}>Delete</button>
-                                </div>
-                            )}
                         </div>
                         );
                     })}
@@ -540,6 +545,15 @@ const TeamForm = () => {
                     </div>
                 </div>
                 )}
+            </div>
+
+            <div className="bottom-actions team-record-actions">
+                <button className="view-records-btn" onClick={handleViewRecords}>
+                    View Records
+                </button>
+                <button className="add-record-btn" onClick={handleAddRecord}>
+                    Add New Record
+                </button>
             </div>
         </div>
     );

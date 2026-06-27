@@ -175,4 +175,5 @@
 .dashboard-content--full .main-contenttt {
     width: calc(100% - 10px);
     height: calc(100% - 10px);
+    overflow: hidden;
 }

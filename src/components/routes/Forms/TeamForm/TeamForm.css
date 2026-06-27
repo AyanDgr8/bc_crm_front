@@ -177,26 +177,30 @@
 
 
 .member-card {
-    flex: 0 0 275px; /* Fixed width, no grow, no shrink */
-    background: white;
-    padding: 0.5rem;
-    margin-left: 0.2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s;
-    border-bottom: 2px solid #EF6F53;
+    flex: 0 0 290px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    padding: 0.85rem;
+    margin-left: 0;
+    border-radius: 8px;
+    box-shadow: 0 12px 26px rgba(36, 52, 71, 0.12);
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    border: 1px solid rgba(25, 118, 210, 0.12);
+    border-bottom: 3px solid #EF6F53;
 }
 
 .member-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
+    box-shadow: 0 18px 34px rgba(36, 52, 71, 0.16);
+    border-color: rgba(239, 111, 83, 0.28);
 }
 
 .member-card h3 {
-    font-size: 1rem;
-    color: #EF6F53;
-    margin-bottom: 0.1rem;
-    border-bottom: 1px solid #0056b3;
-    font-weight: bold;
+    font-size: 1.08rem;
+    color: #243447;
+    margin: 0;
+    border-bottom: 0;
+    font-weight: 900;
+    overflow-wrap: anywhere;
 }
 
 .member-details {
@@ -205,12 +209,13 @@
 }
 
 .member-details p {
-    margin: 0.1rem 0;
+    margin: 0.32rem 0;
     color: #4a5568;
+    overflow-wrap: anywhere;
 }
 
 .member-details strong {
-    color: #364C63;
+    color: #24516f;
 }
 
 .loading {
@@ -232,9 +237,6 @@
 }
 
 .bottom-actions {
-    margin-top: 0.1rem;
-    padding-top: 0.1rem;
-    border-top: 1px solid #eee;
     display: flex;
     justify-content: center;
 }
@@ -242,23 +244,26 @@
 .add-record-btn{
     display: flex;
     width: 20%;
-    background-color: #EF6F53;
+    background: linear-gradient(135deg, #EF6F53, #d85a41);
     color: white;
     border: none;
-    padding: 0.1rem;
-    font-size: 1rem;
-    border-radius: 5px;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    border-radius: 7px;
     cursor: pointer;
     margin: auto;
     align-items:center ;
     justify-content: center;
     margin-bottom: 0.5rem;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 10px 22px rgba(239, 111, 83, 0.24);
+    transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
 }
 
 .add-record-btn:hover{
-    background-color: #f8360b;
-    transform: translateY(1px); 
+    filter: brightness(1.03);
+    transform: translateY(-2px); 
+    box-shadow: 0 14px 28px rgba(239, 111, 83, 0.3);
 }
 
 /* Edit Member Form */
@@ -323,33 +328,37 @@
     gap: 0.25rem;
 }
 .create-buttonn {
-    background-color: #007bff;
+    background-color: #24516f;
     color: white;
     border: none;
-    padding: 1px 5px;
-    border-radius: 5px;
+    padding: 7px 12px;
+    border-radius: 7px;
     cursor: pointer;
-    font-size: 0.8rem;
-    transition: background-color 0.3s ease;
+    font-size: 0.85rem;
+    font-weight: 800;
+    transition: transform 160ms ease, filter 160ms ease;
 }
 
 .create-buttonn:hover {
-    background-color: #0056b3;
+    filter: brightness(1.06);
+    transform: translateY(-1px);
 }
 
 .cancel-buttonn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 1px 5px;
-    border-radius: 5px;
+    background-color: #eef2f6;
+    color: #364C63;
+    border: 1px solid rgba(54, 76, 99, 0.16);
+    padding: 7px 12px;
+    border-radius: 7px;
     cursor: pointer;
-    font-size: 0.8rem;
-    transition: background-color 0.3s ease;
+    font-size: 0.85rem;
+    font-weight: 800;
+    transition: transform 160ms ease, filter 160ms ease;
 }
 
 .cancel-buttonn:hover {
-    background-color: #c82333;
+    filter: brightness(0.98);
+    transform: translateY(-1px);
 }
 
 .create-buttonn:disabled,
@@ -365,16 +374,17 @@
 }
 
 .member-actions button {
-    padding: 6px 12px;
+    padding: 7px 12px;
     border: none;
-    border-radius: 4px;
+    border-radius: 7px;
     cursor: pointer;
     font-size: 13px;
-    transition: background-color 0.2s;
+    font-weight: 800;
+    transition: transform 160ms ease, filter 160ms ease;
 }
 
 .member-actions button:first-child {
-    background-color: #1976d2;
+    background-color: #24516f;
     color: white;
 }
 
@@ -384,11 +394,13 @@
 }
 
 .member-actions button:hover {
-    transform: translateX(2px);
+    transform: translateY(-1px);
+    filter: brightness(1.05);
 }
 
 .member-actions button:last-child:hover {
-    transform: translateX(2px);
+    transform: translateY(-1px);
+    filter: brightness(1.04);
 }
 
 /* Success and Error Messages */
@@ -491,6 +503,16 @@
 
 .team-hero-row {
     width: 100%;
+    justify-content: space-between;
+}
+
+.team-title-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+    flex: 1 1 auto;
 }
 
 .team-hero-main {
@@ -561,6 +583,64 @@
     flex: 1 1 auto;
     min-width: 0;
     text-shadow: 0 2px 12px rgba(0, 0, 0, 0.22);
+}
+
+.team-extension-label {
+    display: block;
+    color: #ffffff;
+    font-size: 0.88rem;
+    font-weight: 850;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.team-extension-call-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    margin-left: auto;
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 999px;
+    background: linear-gradient(135deg, #00f5d4, #00bbf9 48%, #fee440);
+    color: #102030;
+    cursor: pointer;
+    box-shadow: 0 10px 22px rgba(0, 187, 249, 0.28);
+    transition: background 160ms ease, color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.team-extension-call-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ff006e, #fb5607);
+    border-color: rgba(255, 255, 255, 0.78);
+    color: #ffffff;
+    box-shadow: 0 10px 24px rgba(255, 0, 110, 0.34);
+}
+
+.team-extension-call-button:disabled {
+    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.24);
+    color: rgba(255, 255, 255, 0.68);
+    box-shadow: none;
+}
+
+.team-record-actions {
+    gap: 10px;
+    margin: 12px auto 0;
+    padding-top: 10px;
+    border-top: 1px solid rgba(36, 52, 71, 0.12);
+}
+
+.team-record-actions .view-records-btn,
+.team-record-actions .add-record-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    min-width: 132px;
+    margin: 0;
+    margin-bottom: 0;
 }
 
 .team-name-row {
@@ -784,6 +864,14 @@
 .team-memberss {
     margin-top: 4px;
     padding: 6px;
+    border: 1px solid rgba(36, 52, 71, 0.1);
+    background:
+        linear-gradient(180deg, #ffffff 0%, #f5f9fc 100%);
+    box-shadow: 0 14px 30px rgba(36, 52, 71, 0.08);
+    max-height: min(66vh, 720px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-gutter: stable;
 }
 
 .team-members-header {
@@ -822,8 +910,9 @@
 
 .members-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 7px;
+    align-items: stretch;
     overflow: visible;
     padding: 0;
     min-width: 0;
@@ -834,51 +923,107 @@
     position: relative;
     flex: unset;
     width: auto;
-    min-height: 186px;
+    min-height: 126px;
     margin: 0;
     padding: 0;
     border-radius: 8px;
-    background: #ffffff;
-    border: 1px solid rgba(36, 52, 71, 0.12);
-    box-shadow: 0 12px 28px rgba(36, 52, 71, 0.1);
-    transition: transform 170ms ease, box-shadow 170ms ease, border-color 170ms ease;
+    background:
+        linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    border: 1px solid rgba(25, 118, 210, 0.16);
+    box-shadow: 0 14px 30px rgba(36, 52, 71, 0.12);
+    transition: transform 170ms ease, box-shadow 170ms ease, border-color 170ms ease, filter 170ms ease;
     min-width: 0;
     overflow: hidden;
+}
+
+.member-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 4px;
+    background: linear-gradient(90deg, #ef6f53, #f5b041, #1976d2);
 }
 
 .member-card:hover {
     transform: translateY(-3px);
     border-color: rgba(239, 111, 83, 0.36);
-    box-shadow: 0 18px 36px rgba(36, 52, 71, 0.16);
+    box-shadow: 0 22px 42px rgba(36, 52, 71, 0.18);
+    filter: saturate(1.03);
 }
 
 .member-card-header {
     display: flex;
     align-items: center;
-    gap: 0;
-    padding: 10px 12px;
+    justify-content: space-between;
+    gap: 7px;
+    padding: 7px 8px;
     margin-bottom: 0;
     border-bottom: 1px solid rgba(25, 118, 210, 0.12);
     background:
-        linear-gradient(135deg, rgba(36, 81, 111, 0.98), rgba(25, 118, 210, 0.9));
+        linear-gradient(135deg, #243447 0%, #24516f 48%, #1976d2 100%);
     min-width: 0;
 }
 
+.member-identity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.member-call-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    border-radius: 999px;
+    background:
+        linear-gradient(135deg, #18c56e 0%, #12a66a 48%, #0e8f7b 100%);
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow:
+        0 10px 22px rgba(18, 166, 106, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.24);
+    transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.member-call-button:hover:not(:disabled) {
+    filter: brightness(1.08);
+    transform: translateY(-2px) scale(1.04);
+    border-color: rgba(255, 255, 255, 0.68);
+    box-shadow:
+        0 14px 28px rgba(18, 166, 106, 0.38),
+        0 0 0 4px rgba(34, 197, 94, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.member-call-button:disabled {
+    cursor: not-allowed;
+    background: #a6adb7;
+    color: #f4f6f8;
+    opacity: 1;
+    box-shadow: none;
+}
+
+.member-call-button i {
+    font-size: 0.9rem;
+}
+
 .member-avatar {
-    width: 44px;
-    height: 44px;
-    border-radius: 8px;
-    background: linear-gradient(135deg, #24516f, #1976d2);
-    font-size: 0.94rem;
+    display: none;
 }
 
 .member-card h3 {
     margin: 0;
     color: #ffffff;
     border: 0;
-    font-size: 1.05rem;
+    font-size: 0.94rem;
     line-height: 1.2;
     overflow-wrap: anywhere;
+    min-width: 0;
 }
 
 .member-card-header span {
@@ -891,40 +1036,67 @@
 
 .member-details {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 0.78fr 1.22fr;
     gap: 6px;
-    padding: 9px;
-    font-size: 0.82rem;
-    background: linear-gradient(180deg, #ffffff, #f8fbff);
+    padding: 7px;
+    font-size: 0.76rem;
+    background:
+        linear-gradient(180deg, #ffffff, #f8fbff);
 }
 
 .member-details p {
     display: grid;
     gap: 3px;
     margin: 0;
-    padding: 7px 8px;
-    border: 1px solid rgba(36, 52, 71, 0.08);
+    padding: 6px 7px;
+    border: 1px solid rgba(36, 52, 71, 0.1);
     border-radius: 7px;
-    background: rgba(255, 255, 255, 0.86);
-    color: #667085;
+    background: rgba(255, 255, 255, 0.92);
+    color: #364C63;
     text-align: left;
     min-width: 0;
     overflow-wrap: anywhere;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86);
 }
 
 .member-details strong {
     flex: 0 0 auto;
     color: #ef6f53;
     text-align: left;
-    font-size: 0.7rem;
+    font-size: 0.64rem;
     font-weight: 900;
     text-transform: uppercase;
 }
 
+.member-detail-value {
+    color: #25364a;
+    font-size: 0.76rem;
+    font-weight: 800;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.member-extension-value {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    padding: 3px 6px;
+    border-radius: 999px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #24516f, #1976d2);
+    box-shadow: 0 7px 14px rgba(25, 118, 210, 0.18);
+}
+
 .member-details a {
     color: #1976d2;
-    font-weight: 700;
+    font-weight: 850;
     text-decoration: none;
+}
+
+.member-details a:hover {
+    color: #ef6f53;
+    text-decoration: underline;
 }
 
 .member-actions {
@@ -1000,6 +1172,24 @@
     box-shadow: 0 12px 28px rgba(36, 52, 71, 0.12);
 }
 
+@media (max-width: 1500px) {
+    .members-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1260px) {
+    .members-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1040px) {
+    .members-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 860px) {
     .team-info {
         grid-template-columns: 1fr;
@@ -1007,6 +1197,10 @@
 
     .detail-item {
         grid-template-columns: 1fr;
+    }
+
+    .members-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 

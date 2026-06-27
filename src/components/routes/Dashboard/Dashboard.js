@@ -12,6 +12,7 @@ import Center from '../Forms/AdminPortal/Business/Center';
 import UseForm from '../Forms/UseForm/UseForm';
 import TeamForm from '../Forms/TeamForm/TeamForm';
 import FirstReception from './FirstReception';
+import AgentStatsReports from '../Other/AgentStats/AgentStatsReports';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -276,6 +277,7 @@ const Dashboard = () => {
                 <div className="main-contenttt">
                     <Routes>
                         <Route path="first-reception" element={<FirstReception />} />
+                        <Route path="companies" element={<FirstReception companiesOnly />} />
                         <Route path="business/center/:businessId" element={<Center />} />
                         <Route path="business/:businessId/teams" element={<TeamForm />} />
                         <Route path="business/:businessId/team/:teamName" element={<TeamForm />} />
@@ -283,6 +285,7 @@ const Dashboard = () => {
                         <Route path="customers/create" element={<CreateForm />} />
                         <Route path="customers/reminders" element={<Reminder />} />
                         <Route path="customers/search" element={<SearchForm />} />
+                        <Route path="agent-stats" element={<AgentStatsReports />} />
                         <Route path="team/:teamName/:phone_no_primary" element={<UseForm />} />
                         <Route path="customer/:id" element={<UseForm />} />
                     </Routes>

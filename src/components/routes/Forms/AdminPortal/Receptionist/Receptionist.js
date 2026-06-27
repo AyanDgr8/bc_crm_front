@@ -218,17 +218,24 @@ const Receptionist = () => {
 
     return (
         <div className="receptionist-container">
-            <h2>Receptionist Management</h2>
+            <div className="receptionist-page-header">
+                <div>
+                    <span className="receptionist-eyebrow">Management</span>
+                    <h2>Receptionist Management</h2>
+                    <p>{receptionists.length} receptionist{receptionists.length === 1 ? '' : 's'} available</p>
+                </div>
+                {!showForm && (
+                    <button 
+                        className="add-receptionist-btn" 
+                        onClick={handleAddNewClick}
+                    >
+                        Add New Receptionist
+                    </button>
+                )}
+            </div>
             
             {error && <div className="error-message">{error}</div>}
             {success && <div className="success-message">{success}</div>}
-
-            <button 
-                className="add-receptionist-btn" 
-                onClick={handleAddNewClick}
-            >
-                Add New Receptionist
-            </button>
 
             {showForm && (
                 <form onSubmit={handleSubmit} className="receptionist-form">

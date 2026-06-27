@@ -10,8 +10,19 @@ const ResetPassword = () => {
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [visiblePasswords, setVisiblePasswords] = useState({
+        newPassword: false,
+        confirmPassword: false,
+    });
     const navigate = useNavigate();
     const { token } = useParams();
+
+    const togglePasswordVisibility = (field) => {
+        setVisiblePasswords((current) => ({
+            ...current,
+            [field]: !current[field],
+        }));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -76,27 +87,51 @@ const ResetPassword = () => {
                 <form onSubmit={handleSubmit}>
                     <div className="form-groupy">
                         <label>New Password</label>
-                        <input
-                            type="password"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            placeholder="Enter new password"
-                            required
-                            disabled={isLoading}
-                            minLength="8"
-                        />
+                        <div className="reset-password-field">
+                            <input
+                                type={visiblePasswords.newPassword ? "text" : "password"}
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                placeholder="Enter new password"
+                                required
+                                disabled={isLoading}
+                                minLength="8"
+                            />
+                            <button
+                                type="button"
+                                className="reset-password-toggle"
+                                onClick={() => togglePasswordVisibility('newPassword')}
+                                disabled={isLoading}
+                                aria-label={visiblePasswords.newPassword ? "Hide new password" : "Show new password"}
+                                title={visiblePasswords.newPassword ? "Hide new password" : "Show new password"}
+                            >
+                                <i className={`fas fa-eye${visiblePasswords.newPassword ? '-slash' : ''}`}></i>
+                            </button>
+                        </div>
                     </div>
                     <div className="form-groupy">
                         <label>Confirm Password</label>
-                        <input
-                            type="password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder="Confirm new password"
-                            required
-                            disabled={isLoading}
-                            minLength="8"
-                        />
+                        <div className="reset-password-field">
+                            <input
+                                type={visiblePasswords.confirmPassword ? "text" : "password"}
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                placeholder="Confirm new password"
+                                required
+                                disabled={isLoading}
+                                minLength="8"
+                            />
+                            <button
+                                type="button"
+                                className="reset-password-toggle"
+                                onClick={() => togglePasswordVisibility('confirmPassword')}
+                                disabled={isLoading}
+                                aria-label={visiblePasswords.confirmPassword ? "Hide confirm password" : "Show confirm password"}
+                                title={visiblePasswords.confirmPassword ? "Hide confirm password" : "Show confirm password"}
+                            >
+                                <i className={`fas fa-eye${visiblePasswords.confirmPassword ? '-slash' : ''}`}></i>
+                            </button>
+                        </div>
                     </div>
                     <button className="btn-reset" type="submit" disabled={isLoading}>
                         {isLoading ? 'Resetting...' : 'Reset Password'}

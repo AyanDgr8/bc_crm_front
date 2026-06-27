@@ -25,6 +25,7 @@ import Center from "./AdminPortal/Business/Center";
 import Dashboard from "../Dashboard/Dashboard";
 // import FirstReception from "../Dashboard/FirstReception";
 import Reports from "../Other/Reports/Reports.js";
+import AgentStatsReports from "../Other/AgentStats/AgentStatsReports";
 
 // AdminRoute component to protect admin-only routes
 const AdminRoute = ({ children }) => {
@@ -75,6 +76,11 @@ const ReceptionistRoute = ({ children }) => {
     }
     console.log("isReceptionist:", isReceptionist);
     return isReceptionist ? children : <Navigate to="/login" replace />;
+};
+
+const AuthRoute = ({ children }) => {
+    const token = localStorage.getItem('token');
+    return token ? children : <Navigate to="/login" replace />;
 };
 
 const ZForm = () => {
@@ -183,6 +189,12 @@ const ZForm = () => {
                 <BrandRoute>
                     <Reports />
                 </BrandRoute>
+            } />
+
+            <Route path="/agent-stats" element={
+                <AuthRoute>
+                    <AgentStatsReports />
+                </AuthRoute>
             } />
             
             {/* ********************************* */}

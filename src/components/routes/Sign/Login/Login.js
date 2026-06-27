@@ -13,6 +13,7 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [isLocked, setIsLocked] = useState(false);
     const [lockoutTimer, setLockoutTimer] = useState(0);
+    const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -136,17 +137,15 @@ const Login = () => {
                     localStorage.setItem('businessId', userData.business_center_id);
                 }
 
-                // Navigate and reload based on role
+                // Redirect based on role. Use a hard navigation so top-level
+                // login-dependent components are initialized with the new token.
                 let targetPath = '/brand'; // default path
                 if (userData.role === 'admin') {
-                    window.location.reload();
                     targetPath = '/brand';
                 } else if (userData.role === 'brand_user') {
-                    window.location.reload();
                     targetPath = '/business';
                 } else if (userData.role === 'business_admin') {
                     // Business admin should see their center in /business page
-                    window.location.reload();
                     targetPath = '/business';
                 } else if (userData.role === 'receptionist' && userData.business_center_id) {
                     // Only receptionists should go to the specific center page
@@ -154,14 +153,7 @@ const Login = () => {
                     targetPath = `/dashboard/first-reception`;
                 }
 
-                // Navigate to target path
-                if (userData.role === 'receptionist' && userData.business_center_id) {
-                    window.location.reload();
-                    window.location.href = targetPath;
-                } else {
-                    // For all other roles including business_admin, use normal navigation
-                    navigate(targetPath, { replace: true });
-                }
+                window.location.replace(targetPath);
             } else {
                 throw new Error('Invalid response from server');
             }
@@ -260,16 +252,28 @@ const Login = () => {
                         />
                         
                         <label>Password</label>
-                        <input 
-                            type="password" 
-                            name="password" 
-                            placeholder="Enter password"
-                            value={formData.password} 
-                            onChange={handleInputChange} 
-                            disabled={isLocked || loading}
-                            className={isLocked ? 'input-locked' : ''}
-                            required 
-                        />
+                        <div className="login-password-field">
+                            <input 
+                                type={showPassword ? "text" : "password"}
+                                name="password" 
+                                placeholder="Enter password"
+                                value={formData.password} 
+                                onChange={handleInputChange} 
+                                disabled={isLocked || loading}
+                                className={isLocked ? 'input-locked' : ''}
+                                required 
+                            />
+                            <button
+                                type="button"
+                                className="login-password-toggle"
+                                onClick={() => setShowPassword(!showPassword)}
+                                disabled={isLocked || loading}
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                title={showPassword ? "Hide password" : "Show password"}
+                            >
+                                <i className={`fas fa-eye${showPassword ? '-slash' : ''}`}></i>
+                            </button>
+                        </div>
                         
                         <button 
                             type="submit" 

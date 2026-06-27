@@ -129,20 +129,10 @@ window.addEventListener('focus', debouncedCheckSession);
 // Check session on network reconnection
 window.addEventListener('online', debouncedCheckSession);
 
-// Cleanup intervals when page unloads
+// Cleanup interval only. Do not log out on tab close/reload; the same login
+// should keep working in other tabs until the user explicitly logs out.
 window.addEventListener('beforeunload', () => {
     clearInterval(sessionCheckInterval);
-    const token = localStorage.getItem('token');
-    if (token && !isLoggingOut) {
-        // Use navigator.sendBeacon for reliable cleanup during page unload
-        const apiUrl = process.env.REACT_APP_API_URL ;
-        const headers = {
-            'Authorization': `Bearer ${token}`,
-            'x-device-id': getDeviceId()
-        };
-        const blob = new Blob([JSON.stringify({})], { type: 'application/json' });
-        navigator.sendBeacon(`${apiUrl}/logout`, blob);
-    }
 });
 
 // Export the api instance and the apiUrl for use in other components

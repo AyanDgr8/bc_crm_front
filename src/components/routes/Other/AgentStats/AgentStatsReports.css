@@ -1,0 +1,303 @@
+/* src/components/routes/Other/AgentStats/AgentStatsReports.css */
+
+.agent-report-page {
+    width: min(1180px, calc(100vw - 32px));
+    margin: 18px auto 36px;
+    color: #243447;
+}
+
+.agent-report-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 14px;
+    margin-bottom: 14px;
+    border: 1px solid rgba(36, 81, 111, 0.16);
+    border-radius: 8px;
+    background: linear-gradient(135deg, #ffffff, #eef7fb);
+    box-shadow: 0 16px 36px rgba(36, 52, 71, 0.1);
+}
+
+.agent-report-toolbar-title {
+    flex: 1 1 230px;
+    min-width: 0;
+}
+
+.agent-report-kicker {
+    display: inline-flex;
+    margin-bottom: 6px;
+    color: #0f7c73;
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.agent-report-toolbar h1 {
+    margin: 0;
+    color: #16324f;
+    font-size: 1.35rem;
+    font-weight: 900;
+    letter-spacing: 0;
+}
+
+.agent-report-toolbar p {
+    margin: 5px 0 0;
+    color: #5d7281;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.agent-report-toolbar button,
+.agent-report-filters button {
+    height: 38px;
+    border: none;
+    border-radius: 7px;
+    background: #0f7c73;
+    color: white;
+    cursor: pointer;
+    font-weight: 900;
+    padding: 9px 14px;
+    transition: transform 160ms ease, filter 160ms ease;
+}
+
+.agent-report-toolbar button:hover,
+.agent-report-filters button:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
+
+.agent-report-filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    flex: 0 1 auto;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+
+.agent-report-filters label {
+    display: grid;
+    gap: 5px;
+    color: #364c63;
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.agent-report-filters input {
+    width: 190px;
+    height: 38px;
+    border: 1px solid rgba(54, 76, 99, 0.2);
+    border-radius: 7px;
+    padding: 9px 10px;
+    font-size: 0.88rem;
+}
+
+.agent-report-filters button:last-child {
+    background: #eef2f6;
+    color: #364c63;
+    border: 1px solid rgba(54, 76, 99, 0.14);
+}
+
+.agent-report-error {
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    border: 1px solid rgba(220, 53, 69, 0.24);
+    border-radius: 7px;
+    background: #fff1f2;
+    color: #b42335;
+    font-weight: 800;
+}
+
+.agent-report-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.agent-report-summary div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 13px 14px;
+    border: 1px solid rgba(36, 81, 111, 0.2);
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 10px 24px rgba(36, 52, 71, 0.08);
+}
+
+.agent-report-summary span {
+    color: #5d7281;
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.agent-report-summary strong {
+    color: #0f7c73;
+    font-size: 1.25rem;
+    font-weight: 900;
+}
+
+.agent-report-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.agent-report-card {
+    border: 1px solid rgba(22, 50, 79, 0.16);
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 14px 30px rgba(36, 52, 71, 0.09);
+    overflow: hidden;
+    text-align: left;
+}
+
+.agent-report-card-available {
+    border-color: rgba(24, 134, 82, 0.34);
+    background: #f3fbf6;
+    box-shadow: 0 14px 30px rgba(24, 134, 82, 0.14);
+}
+
+.agent-report-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px;
+    background: linear-gradient(135deg, #16324f, #0f7c73);
+    color: white;
+    text-align: left;
+}
+
+.agent-report-card-available .agent-report-card-top {
+    background: linear-gradient(135deg, #16724a, #23a566);
+}
+
+.agent-report-card-top h2 {
+    margin: 0 0 3px;
+    font-size: 0.98rem;
+    font-weight: 900;
+}
+
+.agent-report-card-top span {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    opacity: 0.86;
+}
+
+.agent-report-card-top strong {
+    flex: 0 0 auto;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    font-size: 0.8rem;
+}
+
+.agent-report-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 10px 12px;
+}
+
+.agent-report-metrics span {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    color: #5d7281;
+    font-size: 0.76rem;
+    font-weight: 800;
+    text-align: left;
+}
+
+.agent-report-metrics b {
+    color: #243447;
+}
+
+.agent-report-states,
+.agent-report-state-cell {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.agent-report-states {
+    padding: 0 12px 12px;
+}
+
+.agent-report-states span,
+.agent-report-state-cell span {
+    border-radius: 999px;
+    background: #e8f2ff;
+    color: #1d5fa7;
+    border: 1px solid rgba(29, 95, 167, 0.16);
+    font-size: 0.7rem;
+    font-weight: 900;
+    padding: 4px 7px;
+}
+
+.agent-report-table-wrap {
+    overflow: auto;
+    border: 1px solid rgba(36, 81, 111, 0.16);
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 14px 30px rgba(36, 52, 71, 0.08);
+}
+
+.agent-report-table {
+    width: 100%;
+    min-width: 980px;
+    border-collapse: collapse;
+}
+
+.agent-report-table th,
+.agent-report-table td {
+    border-bottom: 1px solid rgba(36, 81, 111, 0.1);
+    padding: 10px 11px;
+    text-align: left;
+    font-size: 0.8rem;
+}
+
+.agent-report-table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #eef7fb;
+    color: #16324f;
+    font-weight: 900;
+}
+
+.agent-report-table td {
+    color: #364c63;
+    font-weight: 650;
+}
+
+@media (max-width: 780px) {
+    .agent-report-page {
+        width: min(100% - 20px, 1180px);
+    }
+
+    .agent-report-toolbar,
+    .agent-report-filters {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .agent-report-filters input {
+        width: 100%;
+    }
+
+    .agent-report-summary {
+        grid-template-columns: 1fr;
+    }
+}

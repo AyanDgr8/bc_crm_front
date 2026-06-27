@@ -5,7 +5,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../../../utils/api';
 // import FileUpload from './Upload/FileUpload';
-import DownloadData from './Download/DownloadData';
 import { handleLogoutApi } from '../../../../utils/api';
 import "./Header.css";
 
@@ -166,10 +165,18 @@ const Header = () => {
         navigate(userRole === 'receptionist' ? '/dashboard/first-reception' : '/');
     };
 
+    const renderMenuLink = ({ label, to, icon }) => (
+        <Link key={to} to={to} className="dropdown-menu-link">
+            <i className={`fas ${icon} dropdown-menu-icon`}></i>
+            <span>{label}</span>
+        </Link>
+    );
+
     const receptionistMenuItems = [
-        { label: 'Companies', to: '/dashboard/first-reception' },
-        { label: 'Add New Record', to: '/dashboard/customers/create' },
-        { label: 'Reminders', to: '/dashboard/customers/reminders' }
+        { label: 'Dashboard', to: '/dashboard/first-reception', icon: 'fa-chart-line' },
+        { label: 'Companies', to: '/dashboard/companies', icon: 'fa-building' },
+        { label: 'Add New Record', to: '/dashboard/customers/create', icon: 'fa-user-plus' },
+        { label: 'Reminders', to: '/dashboard/customers/reminders', icon: 'fa-bell' }
     ].filter(Boolean);
 
     return (
@@ -236,11 +243,6 @@ const Header = () => {
                             <FileUpload />
                         </div> */}
 
-                        {/* Download button */}
-                    <div className="download-section">
-                        <DownloadData />
-                    </div>
-
                         {/* <div className="notification-section">
                             <img
                                 src="/uploads/bell.svg"
@@ -259,21 +261,19 @@ const Header = () => {
                                 alt="profile icon"
                                 aria-label="Profile"
                             />
-                            {userRole === 'receptionist' && (
-                                <div className="header-user-meta">
-                                    <span className="header-username">{username}</span>
-                                    <span className="header-datetime">
-                                        {currentDateTime.toLocaleString('en-US', {
-                                            weekday: 'long',
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit'
-                                        })}
-                                    </span>
-                                </div>
-                            )}
+                            <div className="header-user-meta">
+                                <span className="header-username">{username || 'User'}</span>
+                                <span className="header-datetime">
+                                    {currentDateTime.toLocaleString('en-US', {
+                                        weekday: 'long',
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })}
+                                </span>
+                            </div>
                             <div className="dropdown-content">
                                 {process.env.NODE_ENV === 'development' && (
                                     <div style={{padding: '1px', borderBottom: '1px solid #ccc', fontSize: '12px', color: '#666'}}>
@@ -284,9 +284,9 @@ const Header = () => {
                                 {/* Admin check */}
                                 {userRole === 'admin' && (
                                     <>
-                                        <Link to="/brand">Brand Management</Link>
-                                        <Link to="/business">Business Center Management</Link>
-                                        <Link to="/receptionist">Receptionist Management</Link>
+                                        {renderMenuLink({ label: 'Brand Management', to: '/brand', icon: 'fa-layer-group' })}
+                                        {renderMenuLink({ label: 'Business Center Management', to: '/business', icon: 'fa-briefcase' })}
+                                        {renderMenuLink({ label: 'Receptionist Management', to: '/receptionist', icon: 'fa-headset' })}
                                         {/* <Link to="/admin">Companies and Users</Link> */}
                                     </>
                                 )}
@@ -294,25 +294,30 @@ const Header = () => {
                                 {/* Brand user menu */}
                                 {(userRole === 'brand_user' || userRole === 'business_admin') && (
                                     <>
-                                        <Link to="/business">Business Center Management</Link>
-                                        <Link to="/receptionist">Receptionist Management</Link>
+                                        {renderMenuLink({ label: 'Business Center Management', to: '/business', icon: 'fa-briefcase' })}
+                                        {renderMenuLink({ label: 'Receptionist Management', to: '/receptionist', icon: 'fa-headset' })}
                                     </>
                                 )}
 
                                 {userRole === 'receptionist' && (
                                     <>
-                                        {receptionistMenuItems.map((item) => (
-                                            <Link key={item.to} to={item.to}>
-                                                {item.label}
-                                            </Link>
-                                        ))}
+                                        {receptionistMenuItems.map(renderMenuLink)}
                                     </>
                                 )}
 
+                                {renderMenuLink({ label: 'Download', to: '/download', icon: 'fa-download' })}
+                                {renderMenuLink({
+                                    label: 'Agent Stats Reports',
+                                    to: userRole === 'receptionist' ? '/dashboard/agent-stats' : '/agent-stats',
+                                    icon: 'fa-chart-bar'
+                                })}
 
                                 <div className="dropdown-divider"></div>
                                 <div className="dropdown-footer" onClick={handleLogout}>
-                                    <span  className="logout-btn">Logout</span>
+                                    <span className="logout-btn">
+                                        <i className="fas fa-sign-out-alt dropdown-menu-icon"></i>
+                                        Logout
+                                    </span>
                                     {!isLoading && username && (
                                         <span className="username-logout">{username}</span>
                                     )}

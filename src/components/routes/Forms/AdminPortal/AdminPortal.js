@@ -8,7 +8,7 @@ import './AdminPortal.css';
 const AdminPortal = () => {
     const navigate = useNavigate();
     const [teams, setTeams] = useState([]);
-    const [newTeams, setNewTeams] = useState([{ team_name: '', tax_id: '', reg_no: '', team_detail: '', team_address: '', team_country: '', team_phone: '', team_email: '' }]);
+    const [newTeams, setNewTeams] = useState([{ team_name: '', team_extension: '', tax_id: '', reg_no: '', team_detail: '', team_address: '', team_country: '', team_phone: '', team_email: '' }]);
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
@@ -126,6 +126,10 @@ const AdminPortal = () => {
             setError('Please enter a team name');
             return;
         }
+        if (validTeams.some(team => !team.team_extension.trim())) {
+            setError('Please enter a team extension');
+            return;
+        }
         
         try {
             for (const team of validTeams) {
@@ -133,7 +137,7 @@ const AdminPortal = () => {
             }
             setError(''); // Clear any existing error
             setSuccess('Team created successfully');
-            setNewTeams([{ team_name: '', tax_id: '', reg_no: '', team_detail: '', team_address: '', team_country: '', team_prompt: '', team_phone: '', team_email: '' }]);
+            setNewTeams([{ team_name: '', team_extension: '', tax_id: '', reg_no: '', team_detail: '', team_address: '', team_country: '', team_prompt: '', team_phone: '', team_email: '' }]);
             fetchTeams();
         } catch (err) {
             console.error('Error creating team:', err);
