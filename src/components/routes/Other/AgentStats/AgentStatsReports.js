@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import api from '../../../../utils/api';
+import { buildAgentStatusByExtension } from '../../../../utils/agentAvailability';
 import './AgentStatsReports.css';
 
 const formatSeconds = (value) => {
@@ -61,13 +62,6 @@ const buildVisibleStates = (report) => {
     });
 
     return visibleStates;
-};
-
-const hasNotAvailableState = (report) => {
-    if (Number(report.not_available_time || 0) > 0) return true;
-
-    const detailedStates = parseStateReport(report.not_available_detailed_report);
-    return Object.values(detailedStates).some((seconds) => Number(seconds || 0) > 0);
 };
 
 const AgentStatsReports = () => {
@@ -154,6 +148,10 @@ const AgentStatsReports = () => {
         return Array.from(latest.values());
     }, [reports]);
 
+    const statusByExtension = useMemo(() => (
+        buildAgentStatusByExtension(reports)
+    ), [reports]);
+
     const totals = useMemo(() => {
         return latestByExtension.reduce((summary, report) => ({
             agents: summary.agents + 1,
@@ -219,7 +217,7 @@ const AgentStatsReports = () => {
             <div className="agent-report-card-grid">
                 {latestByExtension.map((report) => {
                     const stateReport = buildVisibleStates(report);
-                    const isAvailable = !hasNotAvailableState(report);
+                    const isAvailable = statusByExtension[String(report.extension || '').trim()] === 'available';
                     return (
                         <article
                             className={`agent-report-card ${isAvailable ? 'agent-report-card-available' : ''}`}

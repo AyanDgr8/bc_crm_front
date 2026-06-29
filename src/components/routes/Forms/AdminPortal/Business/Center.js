@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { buildAgentStatusByExtension } from '../../../../../utils/agentAvailability';
-import { dialCustomerPhone } from '../../../../../utils/ucpDialer';
+// import { buildAgentStatusByExtension } from '../../../../../utils/agentAvailability';
+// import { dialCustomerPhone } from '../../../../../utils/ucpDialer';
 import './Center.css';
 
 const Center = () => {
@@ -58,7 +58,7 @@ const Center = () => {
     });
     const [editingTeam, setEditingTeam] = useState(null);
     const [role, setRole] = useState(null);
-    const [agentStatusByExtension, setAgentStatusByExtension] = useState({});
+    // const [agentStatusByExtension, setAgentStatusByExtension] = useState({});
 
     const fetchBusiness = async () => {
         try {
@@ -172,25 +172,25 @@ const Center = () => {
         }
     };
 
-    const fetchAgentStatuses = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get(
-                `${process.env.REACT_APP_API_URL}/agent-stats/final`,
-                {
-                    params: {
-                        businessCenterId: businessId,
-                        limit: 300
-                    },
-                    headers: { Authorization: `Bearer ${token}` }
-                }
-            );
-
-            setAgentStatusByExtension(buildAgentStatusByExtension(response.data));
-        } catch (error) {
-            console.error('Error fetching agent statuses:', error);
-        }
-    };
+    // const fetchAgentStatuses = async () => {
+    //     try {
+    //         const token = localStorage.getItem('token');
+    //         const response = await axios.get(
+    //             `${process.env.REACT_APP_API_URL}/agent-stats/final`,
+    //             {
+    //                 params: {
+    //                     businessCenterId: businessId,
+    //                     limit: 300
+    //                 },
+    //                 headers: { Authorization: `Bearer ${token}` }
+    //             }
+    //         );
+    //
+    //         setAgentStatusByExtension(buildAgentStatusByExtension(response.data));
+    //     } catch (error) {
+    //         console.error('Error fetching agent statuses:', error);
+    //     }
+    // };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -205,7 +205,7 @@ const Center = () => {
                 await fetchBrandCounts();
                 await fetchTeams();
                 await fetchAssociates();
-                await fetchAgentStatuses();
+                // await fetchAgentStatuses();
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -243,12 +243,12 @@ const Center = () => {
         return associates.filter((associate) => String(associate.team_id) === String(team.id));
     };
 
-    const getAgentStatus = (associate) => {
-        const extension = String(associate.extension || '').trim();
-        return agentStatusByExtension[extension] || '';
-    };
+    // const getAgentStatus = (associate) => {
+    //     const extension = String(associate.extension || '').trim();
+    //     return agentStatusByExtension[extension] || '';
+    // };
 
-    const canCallAssociate = (associate) => Boolean(associate.extension) && getAgentStatus(associate) === 'available';
+    // const canCallAssociate = (associate) => Boolean(associate.extension) && getAgentStatus(associate) === 'available';
 
     const handleUserInputChange = (field, value) => {
         setNewUser(prev => ({
@@ -816,7 +816,7 @@ const Center = () => {
                                             </span>
                                         )}
                                     </div>
-                                    <button
+                                    {/* <button
                                         type="button"
                                         className="team-extension-call-button"
                                         aria-label={`Call ${team.team_name.replace(/_/g, ' ')} team extension`}
@@ -831,14 +831,12 @@ const Center = () => {
                                         }}
                                     >
                                         <i className="fas fa-phone"></i>
-                                    </button>
+                                    </button> */}
                                 </div>
                             </div>
                             <div className="team-associates-list">
                                 {teamAssociates.length > 0 ? (
                                     teamAssociates.map((associate) => {
-                                        const canCall = canCallAssociate(associate);
-
                                         return (
                                         <div className="team-associate-row" key={associate.id}>
                                             <div className="team-associate-info">
@@ -847,7 +845,7 @@ const Center = () => {
                                                     Ext: {associate.extension || 'N/A'}
                                                 </span>
                                             </div>
-                                            <button
+                                            {/* <button
                                                 type="button"
                                                 className="associate-call-button"
                                                 aria-label={`Call ${associate.username}`}
@@ -861,7 +859,7 @@ const Center = () => {
                                                 disabled={!canCall}
                                             >
                                                 <i className="fas fa-phone"></i>
-                                            </button>
+                                            </button> */}
                                         </div>
                                         );
                                     })

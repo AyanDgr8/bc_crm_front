@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import { useParams, useNavigate } from 'react-router-dom';
-import { buildAgentStatusByExtension } from '../../../../utils/agentAvailability';
-import { dialCustomerPhone } from '../../../../utils/ucpDialer';
+// import { buildAgentStatusByExtension } from '../../../../utils/agentAvailability';
+// import { dialCustomerPhone } from '../../../../utils/ucpDialer';
 import './TeamForm.css';
 
 const TeamForm = () => {
@@ -17,7 +17,7 @@ const TeamForm = () => {
     const [editingMember, setEditingMember] = useState(null);
     const [role, setRole] = useState(null);
     const [activeTab, setActiveTab] = useState('about');
-    const [agentStatusByExtension, setAgentStatusByExtension] = useState({});
+    // const [agentStatusByExtension, setAgentStatusByExtension] = useState({});
     const [memberFormData, setMemberFormData] = useState({
         username: '',
         designation: '',
@@ -123,22 +123,22 @@ const TeamForm = () => {
                     setTeamMembers(membersData);
                 }
 
-                try {
-                    const agentStatsResponse = await axios.get(
-                        `${apiUrl}/agent-stats/final`,
-                        {
-                            params: {
-                                businessCenterId: team.business_id,
-                                limit: 300
-                            },
-                            headers: { Authorization: `Bearer ${token}` }
-                        }
-                    );
-                    setAgentStatusByExtension(buildAgentStatusByExtension(agentStatsResponse.data));
-                } catch (statsError) {
-                    console.error('Error fetching agent statuses:', statsError);
-                    setAgentStatusByExtension({});
-                }
+                // try {
+                //     const agentStatsResponse = await axios.get(
+                //         `${apiUrl}/agent-stats/final`,
+                //         {
+                //             params: {
+                //                 businessCenterId: team.business_id,
+                //                 limit: 300
+                //             },
+                //             headers: { Authorization: `Bearer ${token}` }
+                //         }
+                //     );
+                //     setAgentStatusByExtension(buildAgentStatusByExtension(agentStatsResponse.data));
+                // } catch (statsError) {
+                //     console.error('Error fetching agent statuses:', statsError);
+                //     setAgentStatusByExtension({});
+                // }
                 
                 setIsLoading(false);
             } catch (err) {
@@ -172,12 +172,12 @@ const TeamForm = () => {
         navigate(path);
     };
 
-    const getAgentStatus = (member) => {
-        const extension = String(member.extension || '').trim();
-        return agentStatusByExtension[extension] || '';
-    };
+    // const getAgentStatus = (member) => {
+    //     const extension = String(member.extension || '').trim();
+    //     return agentStatusByExtension[extension] || '';
+    // };
 
-    const canCallMember = (member) => Boolean(member.extension) && getAgentStatus(member) === 'available';
+    // const canCallMember = (member) => Boolean(member.extension) && getAgentStatus(member) === 'available';
     
     const handleMemberUpdate = async (e) => {
         e.preventDefault();
@@ -280,7 +280,7 @@ const TeamForm = () => {
                             </span>
                         )}
                     </div>
-                    <button
+                    {/* <button
                         type="button"
                         className="team-extension-call-button"
                         aria-label={`Call ${displayTeamName} team extension`}
@@ -295,7 +295,7 @@ const TeamForm = () => {
                         }}
                     >
                         <i className="fas fa-phone"></i>
-                    </button>
+                    </button> */}
                 </div>   
             </div>
 
@@ -470,15 +470,13 @@ const TeamForm = () => {
                         </div>
                     )}
                     {teamMembers.map((member) => {
-                        const canCall = canCallMember(member);
-
                         return (
                         <div key={member.id} className="member-card">
                             <div className="member-card-header">
                                 <div className="member-identity">
                                     <h3>{member.username}</h3>
                                 </div>
-                                <button
+                                {/* <button
                                     type="button"
                                     className="member-call-button"
                                     aria-label={`Call ${member.username}`}
@@ -491,7 +489,7 @@ const TeamForm = () => {
                                     }}
                                 >
                                     <i className="fas fa-phone"></i>
-                                </button>
+                                </button> */}
                             </div>
                             <div className="member-details">
                                 <p>

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { buildAgentStatusByExtension } from '../../../utils/agentAvailability';
-import { dialCustomerPhone } from '../../../utils/ucpDialer';
+// import { dialCustomerPhone } from '../../../utils/ucpDialer';
 import './FirstReception.css';
 
 const FirstReception = ({ companiesOnly = false }) => {
@@ -256,7 +256,7 @@ const FirstReception = ({ companiesOnly = false }) => {
         return agentStatusByExtension[extension] || '';
     };
 
-    const canCallMember = (member) => Boolean(member.extension) && getAgentStatus(member) === 'available';
+    // const canCallMember = (member) => Boolean(member.extension) && getAgentStatus(member) === 'available';
 
     const getAssociateRowClass = (member) => {
         const status = getAgentStatus(member);
@@ -293,13 +293,13 @@ const FirstReception = ({ companiesOnly = false }) => {
         }
     };
 
-    const handleTeamExtensionCall = (event, team) => {
-        event.stopPropagation();
-        if (!team.team_extension) return;
-
-        window.openUcpPopup?.();
-        dialCustomerPhone(team.team_extension);
-    };
+    // const handleTeamExtensionCall = (event, team) => {
+    //     event.stopPropagation();
+    //     if (!team.team_extension) return;
+    //
+    //     window.openUcpPopup?.();
+    //     dialCustomerPhone(team.team_extension);
+    // };
 
     const handleUpcomingReminders = () => {
         navigate('/dashboard/customers/reminders');
@@ -311,42 +311,42 @@ const FirstReception = ({ companiesOnly = false }) => {
         setRefreshingDashboard(false);
     };
 
-    const recordCallTransfer = async (team, member) => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) return;
-
-            const businessId = getBusinessId(team);
-            const response = await axios.post(
-                `${process.env.REACT_APP_API_URL}/dashboard/reception-call-transfer`,
-                {
-                    businessCenterId: businessId,
-                    teamId: team.id,
-                    teamName: team.team_name,
-                    memberId: member.id,
-                    memberName: member.username,
-                    memberEmail: member.email,
-                    extension: member.extension
-                },
-                {
-                    headers: { Authorization: `Bearer ${token}` }
-                }
-            );
-
-            setActivity((previousActivity) => ({
-                ...previousActivity,
-                lastCallTransferred: response.data?.transfer || {
-                    QUEUE_NAME: team.team_name,
-                    team_name: team.team_name,
-                    agent_name: member.username,
-                    designation: member.username,
-                    date_created: new Date().toISOString()
-                }
-            }));
-        } catch (error) {
-            console.error('Error recording reception call transfer:', error);
-        }
-    };
+    // const recordCallTransfer = async (team, member) => {
+    //     try {
+    //         const token = localStorage.getItem('token');
+    //         if (!token) return;
+    //
+    //         const businessId = getBusinessId(team);
+    //         const response = await axios.post(
+    //             `${process.env.REACT_APP_API_URL}/dashboard/reception-call-transfer`,
+    //             {
+    //                 businessCenterId: businessId,
+    //                 teamId: team.id,
+    //                 teamName: team.team_name,
+    //                 memberId: member.id,
+    //                 memberName: member.username,
+    //                 memberEmail: member.email,
+    //                 extension: member.extension
+    //             },
+    //             {
+    //                 headers: { Authorization: `Bearer ${token}` }
+    //             }
+    //         );
+    //
+    //         setActivity((previousActivity) => ({
+    //             ...previousActivity,
+    //             lastCallTransferred: response.data?.transfer || {
+    //                 QUEUE_NAME: team.team_name,
+    //                 team_name: team.team_name,
+    //                 agent_name: member.username,
+    //                 designation: member.username,
+    //                 date_created: new Date().toISOString()
+    //             }
+    //         }));
+    //     } catch (error) {
+    //         console.error('Error recording reception call transfer:', error);
+    //     }
+    // };
 
     const formatActivityTime = (dateString) => {
         if (!dateString) return 'N/A';
@@ -470,7 +470,7 @@ const FirstReception = ({ companiesOnly = false }) => {
                                                 </span>
                                             )}
                                         </div>
-                                        <button
+                                        {/* <button
                                             type="button"
                                             className="team-extension-call-button"
                                             aria-label={`Call ${formatTeamName(team.team_name)} team extension`}
@@ -479,14 +479,12 @@ const FirstReception = ({ companiesOnly = false }) => {
                                             onClick={(event) => handleTeamExtensionCall(event, team)}
                                         >
                                             <i className="fas fa-phone"></i>
-                                        </button>
+                                        </button> */}
                                     </div>
                                 </div>
                                 <div className="reception-company-associates">
                                     {team.members?.length > 0 ? (
                                         team.members.map((member) => {
-                                            const canCall = canCallMember(member);
-
                                             return (
                                             <div className={getAssociateRowClass(member)} key={member.id}>
                                                 <div className="reception-associate-info">
@@ -495,7 +493,7 @@ const FirstReception = ({ companiesOnly = false }) => {
                                                         Ext: {member.extension || 'N/A'}
                                                     </span>
                                                 </div>
-                                                <button
+                                                {/* <button
                                                     type="button"
                                                     className="reception-call-button"
                                                     aria-label={`Call ${member.username}`}
@@ -512,7 +510,7 @@ const FirstReception = ({ companiesOnly = false }) => {
                                                     }}
                                                 >
                                                     <i className="fas fa-phone"></i>
-                                                </button>
+                                                </button> */}
                                             </div>
                                             );
                                         })
