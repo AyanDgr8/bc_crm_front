@@ -58,7 +58,7 @@ const Main = () => {
             <PopupProvider>
                 {/* Render Popup component */}
                 <PopupWrapper />
-                <UCP isLoggedIn={isLoggedIn}/>
+                {/* <UCP isLoggedIn={isLoggedIn}/> */}
                 {isLoggedIn && <WhatsAppScanner />}
                 
                 {/* Main content */}
